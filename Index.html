@@ -77,6 +77,84 @@
     </div>
   </div>
 </main>
+  <!-- 🧸 Plushie Creations -->
+<div class="card">
+  <h2>🧸 Plushie Creations</h2>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:8px; align-items:end; margin-bottom:10px">
+    <div>
+      <label class="tagline">Name</label>
+      <input id="pName" placeholder="e.g., Jumbo Octo">
+    </div>
+    <div>
+      <label class="tagline">Size</label>
+      <input id="pSize" placeholder="e.g., Medium">
+    </div>
+    <div>
+      <label class="tagline">Status</label>
+      <select id="pStatus">
+        <option>Planned</option>
+        <option>In progress</option>
+        <option>Finished</option>
+        <option>Delivered</option>
+      </select>
+    </div>
+    <div>
+      <label class="tagline">Price</label>
+      <input id="pPrice" type="number" min="0" step="0.01" placeholder="0.00">
+    </div>
+
+    <div style="grid-column:1 / -1">
+      <label class="tagline">Assign to markets (multi-select)</label>
+      <select id="pMarkets" multiple size="3" style="width:100%"></select>
+    </div>
+
+    <div style="grid-column:1 / -1; display:flex; gap:8px">
+      <input id="pNotes" placeholder="Notes (optional)" style="flex:1">
+      <button id="addPlush">Add / Save</button>
+      <button id="cancelPlush" class="ghost">Cancel</button>
+    </div>
+  </div>
+
+  <div id="plushList"></div>
+</div>
+
+<!-- 🧶 W.I.P.s -->
+<div class="card">
+  <h2>🧶 W.I.P.s</h2>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:8px; align-items:end; margin-bottom:10px">
+    <div>
+      <label class="tagline">Yarn</label>
+      <input id="wYarn" placeholder="e.g., Bernat Blanket">
+    </div>
+    <div>
+      <label class="tagline">Hook</label>
+      <input id="wHook" placeholder="e.g., 4.5 mm">
+    </div>
+    <div>
+      <label class="tagline">Pattern link</label>
+      <input id="wLink" placeholder="https://…">
+    </div>
+    <div>
+      <label class="tagline">Time</label>
+      <input id="wTime" placeholder="hh:mm">
+    </div>
+
+    <div style="grid-column:1 / -1">
+      <label class="tagline">Assign to markets (multi-select)</label>
+      <select id="wMarkets" multiple size="3" style="width:100%"></select>
+    </div>
+
+    <div style="grid-column:1 / -1; display:flex; gap:8px">
+      <input id="wNotes" placeholder="Notes (optional)" style="flex:1">
+      <button id="addWip">Add / Save</button>
+      <button id="cancelWip" class="ghost">Cancel</button>
+    </div>
+  </div>
+
+  <div id="wipList"></div>
+</div>
 
   <!-- Instructions popup -->
   <dialog id="dlgInstructions">
@@ -413,6 +491,258 @@ function openWorkspace(id){
   // Wire search if present
   const s = doc('mSearch'); if (s) s.addEventListener('input', renderMarketDirectory);
 })();
+</script>
+  <script>
+/* ========= Plushies + WIPs (v2.22.9) ========= */
+const STORE = {
+  plush: 'lbs_plush_v1',
+  wips:  'lbs_wips_v1'
+};
+
+let PLUSH = [];
+let WIPS  = [];
+try { PLUSH = JSON.parse(localStorage.getItem(STORE.plush) || '[]'); } catch {}
+try { WIPS  = JSON.parse(localStorage.getItem(STORE.wips)  || '[]'); } catch {}
+function savePlush(){ localStorage.setItem(STORE.plush, JSON.stringify(PLUSH)); }
+function saveWips(){  localStorage.setItem(STORE.wips,  JSON.stringify(WIPS));  }
+
+function getMulti(sel){ return Array.from(sel.selectedOptions).map(o=>o.value); }
+function setMulti(sel,vals){ Array.from(sel.options).forEach(o=>o.selected=(vals||[]).includes(o.value)); }
+function fmtMarketsTag(ids){ if(!ids||!ids.length) return ''; return ids.map(id=>`<span class="tag">${getMarketName(id)||'?'}</span>`).join(' '); }
+
+function populateMarketMulti(selectEl){
+  if(!selectEl) return;
+  selectEl.innerHTML='';
+  (MARKETS||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'')).forEach(m=>{
+    const opt=document.createElement('option'); opt.value=m.id; opt.textContent=`${m.name}${m.date?(' • '+m.date):''}`;
+    selectEl.appendChild(opt);
+  });
+}
+
+/* ------ Plushies ------ */
+let editingPlush = -1;
+function renderPlushies(){
+  const host = document.getElementById('plushList'); if(!host) return;
+  host.innerHTML='';
+
+  // table
+  const table = document.createElement('table');
+  table.style.width='100%'; table.style.borderCollapse='collapse';
+  table.innerHTML = `
+    <thead><tr>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Name</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Size</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Status</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Price</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Markets</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Notes</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px"></th>
+    </tr></thead>
+    <tbody></tbody>`;
+  const tbody = table.querySelector('tbody');
+
+  PLUSH.forEach((p,i)=>{
+    const tr=document.createElement('tr');
+    function td(html){ const x=document.createElement('td'); x.style.padding='6px'; x.style.borderBottom='1px solid #eee'; if(html) x.innerHTML=html; return x; }
+
+    tr.appendChild(td(p.name||'')).textContent = p.name||'';
+    tr.appendChild(td()).textContent = p.size||'';
+    tr.appendChild(td()).textContent = p.status||'Planned';
+    tr.appendChild(td(`${curSym()}${Number(p.price||0).toFixed(2)} ${curType()}`));
+    tr.appendChild(td(fmtMarketsTag(p.markets||[]), true));
+    tr.appendChild(td()).textContent = p.notes||'';
+
+    const actions=td();
+    const e=document.createElement('button'); e.className='soft'; e.textContent='✏️ Edit';
+    e.onclick=()=>{
+      editingPlush=i;
+      document.getElementById('pName').value   = p.name||'';
+      document.getElementById('pSize').value   = p.size||'';
+      document.getElementById('pStatus').value = p.status||'Planned';
+      document.getElementById('pPrice').value  = (p.price??'');
+      document.getElementById('pNotes').value  = p.notes||'';
+      setMulti(document.getElementById('pMarkets'), p.markets||[]);
+    };
+    const d=document.createElement('button'); d.className='ghost'; d.textContent='🗑 Delete';
+    d.onclick=()=>{ PLUSH.splice(i,1); savePlush(); renderPlushies(); };
+
+    actions.appendChild(e); actions.appendChild(document.createTextNode(' ')); actions.appendChild(d);
+    tr.appendChild(actions);
+    tbody.appendChild(tr);
+  });
+
+  host.appendChild(table);
+}
+
+document.getElementById('addPlush').addEventListener('click', ()=>{
+  const row = {
+    name:  (document.getElementById('pName').value||'').trim(),
+    size:  (document.getElementById('pSize').value||'').trim(),
+    status:document.getElementById('pStatus').value||'Planned',
+    price: parseFloat(document.getElementById('pPrice').value||0)||0,
+    markets:getMulti(document.getElementById('pMarkets')),
+    notes: (document.getElementById('pNotes').value||'').trim(),
+    added: new Date().toISOString().slice(0,10)
+  };
+  if(!row.name){ alert('Plushie name required'); return; }
+  if(row.status==='Finished' && !row.finished) row.finished=new Date().toISOString().slice(0,10);
+
+  if(editingPlush>=0){
+    // keep first added date
+    row.added = PLUSH[editingPlush].added || row.added;
+    row.finished = (row.status==='Finished') ? (PLUSH[editingPlush].finished || new Date().toISOString().slice(0,10)) : (PLUSH[editingPlush].finished || '');
+    PLUSH[editingPlush]=row;
+    editingPlush=-1;
+  } else {
+    PLUSH.push(row);
+  }
+
+  ['pName','pPrice','pNotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pSize').value='';
+  document.getElementById('pStatus').value='Planned';
+  setMulti(document.getElementById('pMarkets'), []);
+  savePlush(); renderPlushies();
+});
+
+document.getElementById('cancelPlush').addEventListener('click', ()=>{
+  editingPlush=-1;
+  ['pName','pPrice','pNotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pSize').value='';
+  document.getElementById('pStatus').value='Planned';
+  setMulti(document.getElementById('pMarkets'), []);
+});
+
+/* ------ WIPs ------ */
+let editingWip = -1;
+function renderWips(){
+  const host = document.getElementById('wipList'); if(!host) return;
+  host.innerHTML='';
+
+  const table = document.createElement('table');
+  table.style.width='100%'; table.style.borderCollapse='collapse';
+  table.innerHTML = `
+    <thead><tr>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Yarn</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Hook</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Markets</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Pattern</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Time</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Notes</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px"></th>
+    </tr></thead>
+    <tbody></tbody>`;
+  const tbody = table.querySelector('tbody');
+
+  WIPS.forEach((w,i)=>{
+    const tr=document.createElement('tr');
+    function td(html){ const x=document.createElement('td'); x.style.padding='6px'; x.style.borderBottom='1px solid #eee'; if(html) x.innerHTML=html; return x; }
+
+    tr.appendChild(td()).textContent = w.yarn||'';
+    tr.appendChild(td()).textContent = w.hook||'';
+    tr.appendChild(td(fmtMarketsTag(w.markets||[]), true));
+    tr.appendChild(td( w.link ? `<a target="_blank" href="${w.link}">link</a>` : '' , true));
+    tr.appendChild(td()).textContent = w.time||'';
+    tr.appendChild(td()).textContent = w.notes||'';
+
+    const actions=td();
+    const e=document.createElement('button'); e.className='soft'; e.textContent='✏️ Edit';
+    e.onclick=()=>{
+      editingWip=i;
+      document.getElementById('wYarn').value = w.yarn||'';
+      document.getElementById('wHook').value = w.hook||'';
+      document.getElementById('wLink').value = w.link||'';
+      document.getElementById('wTime').value = w.time||'';
+      document.getElementById('wNotes').value = w.notes||'';
+      setMulti(document.getElementById('wMarkets'), w.markets||[]);
+    };
+    const d=document.createElement('button'); d.className='ghost'; d.textContent='🗑 Delete';
+    d.onclick=()=>{ WIPS.splice(i,1); saveWips(); renderWips(); };
+
+    actions.appendChild(e); actions.appendChild(document.createTextNode(' ')); actions.appendChild(d);
+    tr.appendChild(actions);
+    tbody.appendChild(tr);
+  });
+
+  host.appendChild(table);
+}
+
+document.getElementById('addWip').addEventListener('click', ()=>{
+  const row = {
+    yarn:  (document.getElementById('wYarn').value||'').trim(),
+    hook:  (document.getElementById('wHook').value||'').trim(),
+    link:  (document.getElementById('wLink').value||'').trim(),
+    time:  (document.getElementById('wTime').value||'').trim(),
+    notes: (document.getElementById('wNotes').value||'').trim(),
+    markets:getMulti(document.getElementById('wMarkets'))
+  };
+  if(!row.yarn){ alert('WIP requires yarn'); return; }
+
+  if(editingWip>=0){ WIPS[editingWip]=row; editingWip=-1; }
+  else { WIPS.push(row); }
+
+  ['wYarn','wHook','wLink','wTime','wNotes'].forEach(id=>document.getElementById(id).value='');
+  setMulti(document.getElementById('wMarkets'), []);
+  saveWips(); renderWips();
+});
+
+document.getElementById('cancelWip').addEventListener('click', ()=>{
+  editingWip=-1;
+  ['wYarn','wHook','wLink','wTime','wNotes'].forEach(id=>document.getElementById(id).value='');
+  setMulti(document.getElementById('wMarkets'), []);
+});
+
+/* ------ Integration points ------ */
+// When markets change, rebuild multi-selects:
+const _oldRenderMarkets = renderMarkets;
+renderMarkets = function(){
+  _oldRenderMarkets();
+  populateMarketMulti(document.getElementById('pMarkets'));
+  populateMarketMulti(document.getElementById('wMarkets'));
+};
+
+// Show linked Plushies/WIPs inside Workspace popup:
+const _oldOpenWorkspace = openWorkspace;
+openWorkspace = function(id){
+  _oldOpenWorkspace(id);
+  const m = MARKETS.find(x=>x.id===id); if(!m) return;
+
+  // Plushies
+  const pHost = document.getElementById('wsPlush');
+  if(pHost){
+    const items = (PLUSH||[]).filter(p=> (p.markets||[]).includes(m.id));
+    if(!items.length){ pHost.innerHTML = '<div class="small muted">None linked</div>'; }
+    else {
+      pHost.innerHTML='';
+      items.forEach(p=>{
+        const row=document.createElement('div'); row.className='item'; row.style.gridTemplateColumns='1fr auto';
+        row.innerHTML = `<div>${p.name||'?'} • ${p.status||'Planned'} ${p.price!=null?(' • '+curSym()+Number(p.price||0).toFixed(2)+' '+curType()):''}</div>`;
+        pHost.appendChild(row);
+      });
+    }
+  }
+
+  // WIPs
+  const wHost = document.getElementById('wsWips');
+  if(wHost){
+    const items = (WIPS||[]).filter(w=> (w.markets||[]).includes(m.id));
+    if(!items.length){ wHost.innerHTML = '<div class="small muted">None linked</div>'; }
+    else {
+      wHost.innerHTML='';
+      items.forEach(w=>{
+        const row=document.createElement('div'); row.className='item'; row.style.gridTemplateColumns='1fr auto';
+        const link = w.link ? ` • <a target="_blank" href="${w.link}">pattern</a>` : '';
+        row.innerHTML = `<div>${w.yarn||'?'} • ${w.hook||''}${link}</div>`;
+        wHost.appendChild(row);
+      });
+    }
+  }
+};
+
+// Initial draw for new sections
+populateMarketMulti(document.getElementById('pMarkets'));
+populateMarketMulti(document.getElementById('wMarkets'));
+renderPlushies();
+renderWips();
 </script>
 </body>
 </html>
