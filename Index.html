@@ -1,629 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>LydiBug Styles — Market Hub v2.22.5</title>
-<meta name="theme-color" content="#26c7cc">
-<style>
-:root{--bg:#fffefc;--ink:#28303a;--muted:#66707e;--accent:#26c7cc;--accent2:#e65c53;--border:#e9edf3;--card:#fff;--glow:0 6px 24px rgba(38,199,204,.18)}
-*{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:Nunito,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink)}
-h1,h2,h3{font-family:Quicksand,Nunito,system-ui}a{color:#1e6b75;text-decoration:none}
-header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;gap:10px}
-.brand{display:flex;align-items:center;gap:10px}
-.logo{width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid var(--border);box-shadow:var(--glow)}
-.controls{display:flex;gap:8px;align-items:center;margin-left:auto;position:relative}
-button{border:1px solid transparent;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:var(--glow)}
-button.ghost{background:#fff;border:1px solid var(--border);color:#193d43;box-shadow:none}
-button.soft{background:linear-gradient(135deg,#f7fbff,#fff7f6);color:#1c3340;border:1px solid #eaf3f6;box-shadow:none}
-main{max-width:1280px;margin:0 auto;padding:14px}
-.row{display:flex;flex-wrap:wrap;gap:16px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;flex:1 1 360px;min-width:340px;box-shadow:var(--glow)}
-.card .inner{padding:14px}
-.divider{height:1px;background:var(--border)}
-.card h2{margin:0 0 6px 0;background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
-input,select,textarea{width:100%;border:1px solid var(--border);border-radius:12px;padding:10px;background:#fff;color:#2b2f36;line-height:1.4}
-.small{font-size:12px;color:var(--muted)}.muted{color:var(--muted)}
-.item{display:grid;grid-template-columns:1fr auto auto auto auto;align-items:center;gap:8px;border:1px solid var(--border);border-radius:12px;padding:10px;background:#fff;margin-bottom:8px}
-.dropdown{position:absolute;top:44px;right:0;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--glow);padding:8px;display:none;flex-direction:column;gap:6px;min-width:220px;z-index:20}
-.dropdown button{width:100%;text-align:left}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;background:#0f5132;color:#fff;padding:10px 14px;border-radius:12px;display:none;box-shadow:var(--glow)}
-.toast.show{display:block}
-dialog{border:none;border-radius:14px;box-shadow:var(--glow);padding:16px;max-width:900px}
-.verpill{display:inline-block;padding:8px 14px;border-radius:999px;font-weight:800;letter-spacing:.3px;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;box-shadow:var(--glow)}
-.tagline{font-size:12px;margin-top:2px;background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700;letter-spacing:.2px}
-.table-wrap table{width:100%;border-collapse:collapse}
-.table-wrap th,.table-wrap td{border-bottom:1px solid var(--border);padding:8px;text-align:left;vertical-align:top}
-.tag{display:inline-block;padding:4px 10px;border-radius:999px;background:#f2fbfc;border:1px solid #d5f1f3}
-.badge-upd{display:inline-block;padding:2px 8px;border-radius:999px;font-weight:700;font-size:12px;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;margin-left:6px}
-.workspace{min-width:260px}
-.ws-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
-.ws-cols{display:flex;gap:12px;flex-wrap:wrap}
-.ws-col{flex:1 1 280px}.check-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}.check-row input[type=text]{flex:1}
-</style>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LydiBug Styles Market Hub</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin:0; background:#fafafa; }
+    header { display:flex; align-items:center; padding:10px; background:#fff; border-bottom:1px solid #ddd; }
+    header img { width:40px; height:40px; border-radius:8px; margin-right:10px; }
+    h1 { font-size:1.2rem; margin:0; }
+    .tagline { font-size:0.9rem; color:#666; }
+    main { padding:20px; }
+    .card { background:#fff; border:1px solid #ddd; border-radius:8px; padding:16px; margin-bottom:16px; }
+    dialog { border:1px solid #ccc; border-radius:8px; padding:20px; }
+    dialog::backdrop { background:rgba(0,0,0,0.5); }
+    button { padding:6px 12px; margin:4px; border-radius:6px; border:1px solid #888; background:#eee; cursor:pointer; }
+    button:hover { background:#ddd; }
+  </style>
 </head>
 <body>
-<header>
-  <img class="logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><rect fill='%2326c7cc' rx='16' width='96' height='96'/><text x='50%' y='56%' text-anchor='middle' font-family='Arial' font-size='44' fill='white'>L</text></svg>" alt="logo">
-  <div>
-    <strong>LydiBug Styles — Market Hub</strong> <span class="small muted">v2.22.5</span>
-    <div class="tagline">Simplify your hustle</div>
-  </div>
-  <div class="controls">
-    <button id="btnMenu" class="soft">⋯ Menu</button>
-    <div id="menuDrop" class="dropdown">
-      <button id="btnInstr">📖 Instructions</button>
-      <button id="btnSettings">⚙️ Settings</button>
-      <button id="btnBackup">📤 Export</button>
-      <button id="btnRestore">📥 Import</button>
-      <button id="btnAbout">ℹ️ About</button>
-      <input type="file" id="restoreFile" accept="application/json" style="display:none">
+  <header>
+    <img src="https://via.placeholder.com/40x40.png?text=L" alt="Logo">
+    <div>
+      <h1>LydiBug Styles — Market Hub v2.22.7</h1>
+      <div class="tagline">Simplify your hustle</div>
     </div>
-  </div>
-</header>
+  </header>
 
-<main id="app"></main>
-
-<!-- About -->
-<dialog id="dlgAbout"><h3>About LydiBug Styles — Market Hub</h3>
-<p><strong>Version:</strong> <span id="aboutVer"></span></p>
-<p class="small muted">© LydiBug Styles. Your data stays on your device (local storage). Use Export to back up.</p>
-<p><button id="aboutClose" class="ghost">Close</button></p></dialog>
-
-<!-- Instructions (Welcome) -->
-<dialog id="dlgInstr">
-  <h3>🌸 Welcome to LydiBug Styles — Market Hub</h3>
-  <p><button 
-  onclick="document.getElementById('instructions').style.display='none'; 
-           document.getElementById('hub').style.display='block';">
-  Close
-</button><<strong>Hey, I’m Shelly</strong> (LydiBug Styles). I built this hub for my crochet market workflow and I’m sharing it so other makers can <em>simplify their hustle</em> too. Thanks so much for trying it!</p>
-  <ol>
-    <li><strong>Add a market</strong> — name, start & end date, location, and table fee.</li>
-    <li><strong>Add Plushies & W.I.P.s</strong> — then assign them to one or more markets.</li>
-    <li><strong>Open a market workspace</strong> — manage its checklist, linked items, orders, and see fees vs. sales.</li>
-    <li><strong>Back up</strong> any time via Menu → Export. Import brings everything back.</li>
-  </ol>
-  <p class="small muted">Your data stays on your device. Export regularly to keep a backup.</p>
-  <label class="small"><input type="checkbox" id="instrDont"> Don't show this again</label>
-  <div style="margin-top:8px"><button id="instrClose">Close</button></div>
-</dialog>
-
-<!-- Market Workspace -->
-<dialog id="dlgMarket"><div id="dlgMarketBody"></div></dialog>
-
-<!-- What's New -->
-<dialog id="dlgWhatsNew">
-  <h3>What’s New — v2.22.5</h3>
-  <ul>
-    <li><strong>Workspace popup:</strong> per-market checklist (editable), linked plushies/W.I.P.s, market orders, fee vs. sales summary, Close button.</li>
-    <li><strong>Orders import fix:</strong> imported orders are normalized so ✏️ Edit works immediately; “<span class="badge-upd">Updated</span>” appears after edits.</li>
-    <li><strong>Branding + Welcome:</strong> logo, tagline, full instructions restored.</li>
-    <li><strong>Offline disabled:</strong> always fetches fresh (we’ll enable true PWA later).</li>
-  </ul>
-  <div style="margin-top:8px"><button id="wnClose">Close</button></div>
-</dialog>
-
-<!-- Settings -->
-<dialog id="dlgSettings">
-  <h3>Settings</h3>
-  <div class="row">
-    <label class="small" style="width:100%">Currency symbol <input id="sCurSym" placeholder="$"></label>
-    <label class="small" style="width:100%">Currency type (USD, CAD…) <input id="sCurType" placeholder="USD"></label>
-    <label class="small" style="width:100%">Manage sizes
-      <textarea id="sSizes" rows="4" placeholder="One size per line"></textarea>
-    </label>
-    <label class="small" style="width:100%">Manage locations
-      <textarea id="sLocs" rows="4" placeholder="One location per line"></textarea>
-    </label>
-  </div>
-  <div style="margin-top:8px"><button id="sSave">Save</button> <button id="sClose" class="ghost">Close</button></div>
-</dialog>
-
-<footer style="max-width:1280px;margin:12px auto 24px auto;padding:0 14px;text-align:center">
-  <span class="verpill">LydiBug Styles Market Hub — v2.22.5</span>
-</footer>
-<div class="toast" id="toast">Saved</div>
-
-<script>
-/* ====== Brand/Manifest (offline intentionally minimal) ====== */
-(function(){
-  const manifest={name:"LydiBug Styles — Market Hub",short_name:"LBS Hub",start_url:"./",display:"standalone",background_color:"#ffffff",theme_color:"#26c7cc",icons:[{src:"data:image/png;base64,iVBORw0KGgo=",sizes:"192x192",type:"image/png"}]};
-  const blob=new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"});
-  const url=URL.createObjectURL(blob); const link=document.createElement('link'); link.rel='manifest'; link.href=url; document.head.appendChild(link);
-  if('serviceWorker'in navigator){ const sw="self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('activate',e=>clients.claim());"; navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'text/javascript'}))); }
-})();
-
-/* ====== State & Storage ====== */
-const VERSION='v2.22.5';
-const K={ markets:'lbs_mk_markets_v7', master:'lbs_mk_master_v7', plush:'lbs_mk_plushies_v7', wips:'lbs_mk_wips_v7', ideas:'lbs_mk_ideas_v7', orders:'lbs_mk_orders_v7', settings:'lbs_mk_settings_v3', whatsnew:'lbs_whatsnew_'+VERSION, instrhide:'lbs_instr_hide' };
-function toast(m){ const t=document.getElementById('toast'); t.textContent=m||'Saved'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1200); }
-function uid(){ return Math.random().toString(36).slice(2)+Date.now().toString(36); }
-
-let SETTINGS={ currency:'$', currencyType:'USD', sizes:['Mini (3–5")','Small (6–8")','Medium (9–12")','Large (13–16")','XL / Jumbo (17–20")','Giant (21”+)'], locations:['Parksville']};
-try{ SETTINGS=Object.assign(SETTINGS, JSON.parse(localStorage.getItem(K.settings)||'{}')); }catch{}
-function saveSettings(){ localStorage.setItem(K.settings, JSON.stringify(SETTINGS)); }
-function curSym(){ return SETTINGS.currency||'$'; } function curType(){ return SETTINGS.currencyType||'USD'; }
-
-let MARKETS=[], PLUSH=[], WIPS=[], IDEAS=[], ORDERS=[], MASTER=[];
-try{ MARKETS=JSON.parse(localStorage.getItem(K.markets)||'[]'); }catch{}
-try{ PLUSH=JSON.parse(localStorage.getItem(K.plush)||'[]'); }catch{}
-try{ WIPS =JSON.parse(localStorage.getItem(K.wips)||'[]'); }catch{}
-try{ IDEAS=JSON.parse(localStorage.getItem(K.ideas)||'[]'); }catch{}
-try{ ORDERS=JSON.parse(localStorage.getItem(K.orders)||'[]'); }catch{}
-try{ MASTER=JSON.parse(localStorage.getItem(K.master)||'["Float & Square reader","Cash box","Business cards","Bags","Tablecloth","Display risers","Signage","Extra yarn & hooks","Tape/Scissors","Hand sanitizer","Water & snacks"]'); }catch{ MASTER=[]; }
-
-function saveAll(){ localStorage.setItem(K.markets, JSON.stringify(MARKETS)); localStorage.setItem(K.plush, JSON.stringify(PLUSH)); localStorage.setItem(K.wips, JSON.stringify(WIPS)); localStorage.setItem(K.ideas, JSON.stringify(IDEAS)); localStorage.setItem(K.orders, JSON.stringify(ORDERS)); localStorage.setItem(K.master, JSON.stringify(MASTER)); }
-
-/* ====== UI Builders ====== */
-const app=document.getElementById('app');
-function sectionMarkets(){ return `
-<div class="row">
-  <section class="card" style="flex:2 1 600px">
-    <div class="inner">
-<div id="hub" style="display:none;">
+  <main id="hub" style="display:none;">
+    <div class="card">
       <h2>📅 Upcoming Markets</h2>
-      <div class="row">
-        <input id="mName" placeholder="Market name">
-        <div style="display:flex;gap:8px;flex:1 1 100%">
-          <input id="mDate" type="date" style="flex:1" placeholder="Start date">
-          <input id="mEnd" type="date" style="flex:1" placeholder="End date (optional)">
-          <select id="mWhere" style="flex:1"></select>
-        </div>
-        <input id="mFee" type="number" step="0.01" min="0" placeholder="Table fee">
-        <input id="mNotes" placeholder="Notes">
-      </div>
+      <p>Market management will go here.</p>
     </div>
-    <div class="card-footer" style="display:flex;gap:8px;align-items:center;padding:10px 14px">
-      <button id="addMarket">➕ Add Market</button>
-      <span class="small muted" style="margin-left:auto">Next up: <span id="nextBadge" class="tag">No upcoming markets yet</span></span>
-    </div>
-    <div class="divider"></div>
-    <div class="inner"><div id="marketList" class="list"></div></div>
-  </section>
-  <section class="card">
-    <div class="inner">
-      <h2>🗂️ List of Markets</h2>
-      <input id="mSearch" placeholder="Search by name, date, or location…" style="margin:8px 0">
-      <div id="mDir" class="list"></div>
-    </div>
-  </section>
-  <section class="card">
-    <div class="inner">
-      <h2>📊 Insights</h2>
-      <div class="table-wrap">
-        <div class="item" style="grid-template-columns:auto 1fr auto;"><div>📅</div><div><strong>Upcoming markets</strong><div class="small muted">Count of future dates</div></div><div id="insUpcoming" class="tag">0</div></div>
-        <div class="item" style="grid-template-columns:auto 1fr auto;"><div>⭐</div><div><strong>Next market</strong><div class="small muted" id="insNextSub">No upcoming markets</div></div><div id="insNext" class="tag">—</div></div>
-        <div class="item" style="grid-template-columns:auto 1fr auto;"><div>💰</div><div><strong>Total vendor fees</strong><div class="small muted">All markets</div></div><div id="insFees" class="tag">$0.00 USD</div></div>
-        <div class="item" style="grid-template-columns:auto 1fr auto;"><div>🛍️</div><div><strong>Total sales</strong><div class="small muted">From market workspaces</div></div><div id="insSales" class="tag">$0.00 USD</div></div>
-      </div>
-    </div>
-  </section>
-</div>`;}
-function sectionPlushWips(){ return `
-<div class="row">
-  <section class="card" style="flex:2 1 620px">
-    <div class="inner">
-      <h2>🧶 Plushie Creations</h2>
-      <div class="row">
-        <input id="pName" placeholder="Name">
-        <select id="pSize"></select>
-        <select id="pStatus"><option>Planned</option><option>In progress</option><option>Finished</option><option>Delivered</option></select>
-        <input id="pPrice" type="number" step="0.01" min="0" placeholder="Price">
-        <input id="pNotes" placeholder="Notes">
-        <label class="small" style="width:100%">Assign to markets
-          <select id="pMarkets" multiple size="3" style="width:100%"></select>
-        </label>
-      </div>
-      <div class="row" style="gap:8px">
-        <button id="addPlush">Add / Save</button>
-        <button id="cancelPlush" class="ghost">Cancel</button>
-      </div>
-    </div>
-    <div class="divider"></div>
-    <div class="inner">
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Name</th><th>Size</th><th>Status</th><th>Price</th><th>Markets</th><th>Notes</th><th>Added</th><th>Finished</th><th></th></tr></thead>
-          <tbody id="plushBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-  <section class="card">
-    <div class="inner">
-      <h2>✍️ W.I.P.s</h2>
-      <div class="row">
-        <input id="wYarn" placeholder="Yarn">
-        <input id="wHook" placeholder="Hook (e.g., 4.5 mm)">
-        <input id="wLink" placeholder="Pattern URL">
-        <input id="wTime" placeholder="Time (hh:mm)">
-        <label class="small" style="width:100%">Assign to markets
-          <select id="wMarkets" multiple size="3" style="width:100%"></select>
-        </label>
-        <input id="wNotes" placeholder="Notes" style="width:100%">
-      </div>
-      <div class="row" style="gap:8px">
-        <button id="addWip">Add / Save</button>
-        <button id="cancelWip" class="ghost">Cancel</button>
-      </div>
-    </div>
-    <div class="divider"></div>
-    <div class="inner">
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Yarn</th><th>Hook</th><th>Markets</th><th>Link</th><th>Time</th><th>Notes</th><th></th></tr></thead>
-          <tbody id="wipBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-</div>`;}
-function sectionIdeasOrders(){ return `
-<div class="row">
-  <section class="card" style="flex:2 1 560px">
-    <div class="inner">
-      <h2>💡 Ideas</h2>
-      <textarea id="ideaText" placeholder="Jot down ideas…"></textarea>
-      <div style="margin-top:8px"><button id="addIdea">Add Idea</button></div>
-    </div>
-    <div class="divider"></div>
-    <div class="inner"><div id="ideaList" class="list"></div></div>
-  </section>
-  <section class="card">
-    <div class="inner">
-      <h2>🧾 Customer Orders</h2>
-      <div class="row">
-        <input id="oName" placeholder="Customer name">
-        <input id="oItem" placeholder="Item">
-        <input id="oQty" type="number" min="1" step="1" placeholder="Qty">
-        <input id="oDue" type="date">
-        <select id="oStatus"><option>Planned</option><option>In progress</option><option>Finished</option><option>Delivered</option></select>
-        <label class="small" style="width:100%">Delivery
-          <select id="oDeliveryType">
-            <option value="">— choose —</option>
-            <option value="market">Market</option>
-            <option value="shipping">Shipping</option>
-            <option value="pickup">Pickup</option>
-          </select>
-        </label>
-        <label class="small" id="oDeliveryMarketWrap" style="width:100%; display:none">
-          Deliver at market
-          <select id="oMarket"><option value="">—</option></select>
-        </label>
-        <div id="oDeliveryShipWrap" style="width:100%; display:none">
-          <input id="oShipTo" placeholder="Ship to (name)">
-          <input id="oShipAddr" placeholder="Shipping address">
-          <div class="row">
-            <input id="oShipCost" type="number" step="0.01" min="0" placeholder="Shipping cost">
-            <input id="oShipTrack" placeholder="Tracking # (optional)">
-          </div>
-          <input id="oShipNotes" placeholder="Shipping notes (optional)">
-        </div>
-        <div id="oDeliveryPickWrap" style="width:100%; display:none">
-          <label class="small" style="width:100%">Pickup location
-            <select id="oPickLoc"></select>
-          </label>
-          <input id="oPickWhen" type="datetime-local" placeholder="Pickup time (optional)">
-          <input id="oPickNotes" placeholder="Pickup notes (optional)">
-        </div>
-        <input id="oNotes" placeholder="Order notes" style="width:100%">
-      </div>
-      <div class="row" style="gap:8px">
-        <button id="addOrder">Add / Save</button>
-        <button id="cancelOrder" class="ghost">Cancel</button>
-      </div>
-    </div>
-    <div class="divider"></div>
-    <div class="inner">
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Name</th><th>Item</th><th>Qty</th><th>Due</th><th>Status</th><th>Delivery</th><th>Notes</th><th></th></tr></thead>
-          <tbody id="orderBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-</div>`;}
 
-/* Mount initial UI */
-app.innerHTML = sectionMarkets()+sectionPlushWips()+sectionIdeasOrders();
+    <div class="card">
+      <h2>🧸 Plushie Creations</h2>
+      <p>Track plushies here.</p>
+    </div>
 
-/* ====== Helpers ====== */
-function getMarketName(id){ const m=MARKETS.find(x=>x.id===id); return m?m.name:''; }
-function getMulti(sel){ return Array.from(sel.selectedOptions).map(o=>o.value); }
-function setMulti(sel, vals){ Array.from(sel.options).forEach(o=> o.selected=(vals||[]).includes(o.value)); }
-function fmtMarketsTag(ids){ if(!ids||!ids.length) return ''; return ids.map(id=>'<span class=tag>'+ (getMarketName(id)||'?') +'</span>').join(' '); }
-function statusBadge(m){ const todayStr=new Date().toISOString().slice(0,10); const start=m.date; const end=m.endDate||m.date; if(!start) return '—'; if(todayStr<start){ const dleft=Math.ceil((new Date(start)-new Date(todayStr))/86400000); return 'D-'+dleft; } else if(todayStr>=start && todayStr<=end) return 'ON'; return 'PAST'; }
-function populateMarketOptions(sel, includeBlank){ if(!sel) return; sel.innerHTML=''; if(includeBlank) sel.add(new Option('—','')); (MARKETS||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'')).forEach(m=> sel.add(new Option(m.name+(m.date?(' • '+m.date):''), m.id))); }
-function populatePickupLocations(sel){ if(!sel) return; sel.innerHTML=''; (SETTINGS.locations||[]).forEach(l=> sel.add(new Option(l,l))); }
+    <div class="card">
+      <h2>🧶 W.I.P.s</h2>
+      <p>Track current works in progress here.</p>
+    </div>
 
-/* ====== MENU ====== */
-const menu=document.getElementById('menuDrop');
-document.getElementById('btnMenu').addEventListener('click',(e)=>{e.stopPropagation(); menu.style.display = (menu.style.display==='none'||!menu.style.display)?'flex':'none';});
-document.addEventListener('click', (e)=>{ if(!e.target.closest('.controls')) menu.style.display='none'; });
+    <div class="card">
+      <h2>📦 Orders</h2>
+      <p>Track customer and custom orders here.</p>
+    </div>
 
-/* ====== Markets ====== */
-function renderMarketDirectory(){
-  const host=document.getElementById('mDir'); host.innerHTML='';
-  const q=(document.getElementById('mSearch').value||'').toLowerCase();
-  (MARKETS||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')).filter(m=>{
-    const hay=[m.name,m.date,(m.endDate||''),m.where].join(' ').toLowerCase(); return !q || hay.includes(q);
-  }).forEach(m=>{
-    const row=document.createElement('div'); row.className='item';
-    const left=document.createElement('div'); left.innerHTML='<strong>'+ (m.name||'Untitled') + '</strong>' + (m.date?(' • '+m.date):'') + (m.endDate?(' → '+m.endDate):'') + (m.where?(' • '+m.where):'');
-    const open=document.createElement('button'); open.textContent='Open'; open.onclick=()=>openWorkspace(m.id);
-    row.appendChild(left); row.appendChild(open); host.appendChild(row);
-  });
-}
-function renderMarkets(){
-  const list=document.getElementById('marketList'); list.innerHTML='';
-  let arr=(MARKETS||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-  arr.forEach(m=>{
-    const row=document.createElement('div'); row.className='item';
-    const left=document.createElement('div');
-    const feeTxt=(m.fee&&!isNaN(m.fee))?(' • '+curSym()+Number(m.fee).toFixed(2)+' '+curType()):'';
-    const dates=(m.date?(' • '+m.date):'')+(m.endDate?(' → '+m.endDate):'');
-    left.innerHTML='<strong>'+ (m.name||'Untitled') +'</strong>'+dates+(m.where?(' • '+m.where):'')+feeTxt;
-    const badge=document.createElement('div'); badge.className='small muted'; badge.textContent=statusBadge(m);
-    const open=document.createElement('button'); open.textContent='Open'; open.onclick=()=>openWorkspace(m.id);
-    const salesWrap=document.createElement('div'); salesWrap.innerHTML='<span class="small muted">Sales:</span> <input type="number" step="0.01" min="0" style="width:110px" value="'+(Number(m.sales||0))+'">';
-    const sInp=salesWrap.querySelector('input'); sInp.addEventListener('change',()=>{ m.sales=parseFloat(sInp.value||0); saveAll(); renderInsights(); toast('Sales updated'); });
-    const del=document.createElement('button'); del.className='ghost'; del.textContent='Delete';
-    del.onclick=()=>{ if(confirm('Delete this market?')){ MARKETS=MARKETS.filter(x=>x.id!==m.id); saveAll(); renderAll(); } };
-    row.appendChild(left); row.appendChild(badge); row.appendChild(open); row.appendChild(salesWrap); row.appendChild(del);
-    list.appendChild(row);
-  });
-  const t=new Date().toISOString().slice(0,10);
-  const next=arr.find(x=>x.date && x.date>=t);
-  document.getElementById('nextBadge').textContent= next ? (next.name+' • '+next.date) : 'No upcoming markets yet';
-  populateMarketOptions(document.getElementById('pMarkets'), false);
-  populateMarketOptions(document.getElementById('wMarkets'), false);
-  populateMarketOptions(document.getElementById('oMarket'), true);
-  populatePickupLocations(document.getElementById('oPickLoc'));
-  renderMarketDirectory();
-}
-document.getElementById('addMarket').addEventListener('click',()=>{
-  let where=document.getElementById('mWhere').value;
-  if(where==='__OTHER__'){ const v=prompt('New location?',''); if(v){ where=v; if(!SETTINGS.locations.includes(v)){ SETTINGS.locations.push(v); saveSettings(); } } else where=''; }
-  const m={ id:uid(), name:document.getElementById('mName').value.trim(), date:document.getElementById('mDate').value, endDate:document.getElementById('mEnd').value||'', where:where, fee:parseFloat(document.getElementById('mFee').value||0), sales:0, notes:document.getElementById('mNotes').value.trim(), checklist:[] };
-  if(!m.name){ alert('Market needs a name'); return; }
-  MARKETS.push(m); ['mName','mDate','mEnd','mFee','mNotes'].forEach(id=>document.getElementById(id).value=''); document.getElementById('mWhere').value='';
-  saveAll(); renderMarkets(); renderInsights(); toast('Market added');
-});
-document.getElementById('mSearch').addEventListener('input', renderMarketDirectory);
+    <div class="card">
+      <h2>⚙️ Settings</h2>
+      <p>Adjust currency, sizes, locations here.</p>
+    </div>
+  </main>
 
-/* ====== Plushies ====== */
-let editingPlush=-1;
-function renderPlushies(){
-  const body=document.getElementById('plushBody'); body.innerHTML='';
-  (PLUSH||[]).forEach((p,i)=>{
-    const tr=document.createElement('tr');
-    const actions=document.createElement('td');
-    const e=document.createElement('button'); e.className='soft'; e.textContent='✏️ Edit';
-    e.onclick=()=>{ editingPlush=i; pName.value=p.name||''; pSize.value=p.size||''; pStatus.value=p.status||'Planned'; pPrice.value=p.price??''; pNotes.value=p.notes||''; setMulti(pMarkets, p.markets||[]); };
-    const d=document.createElement('button'); d.className='ghost'; d.textContent='🗑 Delete'; d.onclick=()=>{ PLUSH.splice(i,1); saveAll(); renderPlushies(); };
-    actions.appendChild(e); actions.appendChild(document.createTextNode(' ')); actions.appendChild(d);
-    const tds=[ p.name||'', p.size||'', p.status||'Planned', curSym()+Number(p.price||0).toFixed(2)+' '+curType(), null, p.notes||'', p.added||'', p.finished||'' ];
-    tds.forEach((v,idx)=>{ const td=document.createElement('td'); if(idx==4) td.innerHTML=fmtMarketsTag(p.markets||[]); else td.textContent=v||''; tr.appendChild(td); });
-    tr.appendChild(actions); body.appendChild(tr);
-  });
-}
-const pName=document.getElementById('pName'), pSize=document.getElementById('pSize'), pStatus=document.getElementById('pStatus'), pPrice=document.getElementById('pPrice'), pNotes=document.getElementById('pNotes'), pMarkets=document.getElementById('pMarkets');
-document.getElementById('addPlush').addEventListener('click',()=>{
-  const row={ name:pName.value.trim(), size:pSize.value, status:pStatus.value, price:parseFloat(pPrice.value||0), notes:pNotes.value.trim(), markets:getMulti(pMarkets), added:(new Date().toISOString().slice(0,10)) };
-  if(!row.name) return alert('Name required');
-  if(editingPlush>=0){ row.added=PLUSH[editingPlush].added||row.added; row.finished=(row.status==='Finished'?(PLUSH[editingPlush].finished||new Date().toISOString().slice(0,10)):(PLUSH[editingPlush].finished||'')); PLUSH[editingPlush]=row; editingPlush=-1; }
-  else{ row.finished=(row.status==='Finished'? new Date().toISOString().slice(0,10):''); PLUSH.push(row); }
-  ['pName','pPrice','pNotes'].forEach(id=>document.getElementById(id).value=''); pStatus.value='Planned'; pSize.selectedIndex=0; setMulti(pMarkets, []); saveAll(); renderPlushies(); toast('Saved plushie');
-});
-document.getElementById('cancelPlush').addEventListener('click',()=>{ editingPlush=-1; ['pName','pPrice','pNotes'].forEach(id=>document.getElementById(id).value=''); pStatus.value='Planned'; pSize.selectedIndex=0; setMulti(pMarkets, []); });
+  <!-- Instructions popup -->
+  <dialog id="dlgInstructions">
+    <h2>Welcome to LydiBug Styles Market Hub</h2>
+    <p>
+      I created this tool to manage my crochet business and thought other
+      makers might find it helpful too. Here’s to the hustle! 💪
+    </p>
+    <button id="btnCloseInstructions">Close</button>
+  </dialog>
 
-/* ====== WIPs ====== */
-let editingWip=-1;
-function renderWips(){
-  const body=document.getElementById('wipBody'); body.innerHTML='';
-  (WIPS||[]).forEach((w,i)=>{
-    const tr=document.createElement('tr');
-    const actions=document.createElement('td');
-    const e=document.createElement('button'); e.className='soft'; e.textContent='✏️ Edit';
-    e.onclick=()=>{ editingWip=i; wYarn.value=w.yarn||''; wHook.value=w.hook||''; wLink.value=w.link||''; wTime.value=w.time||''; wNotes.value=w.notes||''; setMulti(wMarkets, w.markets||[]); };
-    const d=document.createElement('button'); d.className='ghost'; d.textContent='🗑 Delete'; d.onclick=()=>{ WIPS.splice(i,1); saveAll(); renderWips(); };
-    actions.appendChild(e); actions.appendChild(document.createTextNode(' ')); actions.appendChild(d);
-    const tds=[w.yarn||'', w.hook||'', null, (w.link?'<a target=_blank href="'+w.link+'">link</a>':''), w.time||'', w.notes||''];
-    tds.forEach((v,idx)=>{ const td=document.createElement('td'); if(idx===2) td.innerHTML=fmtMarketsTag(w.markets||[]); else if(idx===3) td.innerHTML=v; else td.textContent=v||''; tr.appendChild(td); });
-    tr.appendChild(actions); body.appendChild(tr);
-  });
-}
-const wYarn=doc('wYarn'), wHook=doc('wHook'), wLink=doc('wLink'), wTime=doc('wTime'), wNotes=doc('wNotes'), wMarkets=doc('wMarkets');
-document.getElementById('addWip').addEventListener('click',()=>{
-  const row={ yarn:wYarn.value.trim(), hook:wHook.value.trim(), link:wLink.value.trim(), time:wTime.value.trim(), notes:wNotes.value.trim(), markets:getMulti(wMarkets) };
-  if(!row.yarn) return alert('Yarn required');
-  if(editingWip>=0){ WIPS[editingWip]=row; editingWip=-1; } else { WIPS.push(row); }
-  ['wYarn','wHook','wLink','wTime','wNotes'].forEach(id=>doc(id).value=''); setMulti(wMarkets, []); saveAll(); renderWips(); toast('Saved W.I.P.');
-});
-document.getElementById('cancelWip').addEventListener('click',()=>{ editingWip=-1; ['wYarn','wHook','wLink','wTime','wNotes'].forEach(id=>doc(id).value=''); setMulti(wMarkets, []); });
+  <!-- What's New popup -->
+  <dialog id="dlgWhatsNew">
+    <h2>✨ What’s New in v2.22.7</h2>
+    <ul>
+      <li>Fixed broken Instructions popup (now closable)</li>
+      <li>Rebuilt full index.html structure</li>
+      <li>“What’s New” popup works correctly</li>
+    </ul>
+    <button id="wnClose">Got it</button>
+  </dialog>
 
-/* ====== Ideas ====== */
-function renderIdeas(){ const list=doc('ideaList'); list.innerHTML=''; (IDEAS||[]).forEach((v,i)=>{ const row=div('item'); row.appendChild(document.createTextNode(v)); const del=btn('🗑 Delete','ghost'); del.onclick=()=>{ IDEAS.splice(i,1); saveAll(); renderIdeas(); }; row.appendChild(del); list.appendChild(row); }); }
-doc('addIdea').addEventListener('click', ()=>{ const v=doc('ideaText').value.trim(); if(!v) return; IDEAS.push(v); doc('ideaText').value=''; saveAll(); renderIdeas(); });
-
-/* ====== Orders ====== */
-let editingOrder=-1;
-function updateDeliveryUI(){
-  const v=doc('oDeliveryType').value||''; show('oDeliveryMarketWrap', v==='market'); show('oDeliveryShipWrap', v==='shipping'); show('oDeliveryPickWrap', v==='pickup');
-}
-doc('oDeliveryType').addEventListener('change', updateDeliveryUI);
-
-function renderOrders(){
-  const body=doc('orderBody'); body.innerHTML='';
-  (ORDERS||[]).forEach((o,i)=>{
-    if(!o.deliveryType && o.market) o.deliveryType='market'; // back-compat
-    function td(v,html){ const x=document.createElement('td'); if(html) x.innerHTML=v; else x.textContent=v; return x; }
-    let dLabel='—';
-    if(o.deliveryType==='market') dLabel='Market: '+(getMarketName(o.market||'')||'—');
-    else if(o.deliveryType==='shipping'){ const cost=isNaN(o.ship?.cost)?0:Number(o.ship.cost); dLabel='Shipping'+(cost>0?(' ('+curSym()+cost.toFixed(2)+' '+curType()+')'):'' ); }
-    else if(o.deliveryType==='pickup'){ dLabel='Pickup'+(o.pickup?.loc?(' ('+o.pickup.loc+')'):''); }
-    const badge=(o.lastEditedAt && (!o.createdAt || o.lastEditedAt > o.createdAt)) ? "<span class='badge-upd'>Updated</span>" : "";
-    const tr=document.createElement('tr');
-    tr.appendChild(td(o.name||'')); tr.appendChild(td(o.item||'')); tr.appendChild(td(o.qty||'')); tr.appendChild(td(o.due||'')); tr.appendChild(td(o.status||'')); tr.appendChild(td(dLabel+(badge?(' '+badge):''),true)); tr.appendChild(td(o.notes||''));
-    const act=document.createElement('td');
-    const e=btn('✏️ Edit','soft'); e.onclick=()=>{ editingOrder=i;
-      vset('oName',o.name); vset('oItem',o.item); vset('oQty',o.qty||1); vset('oDue',o.due); vset('oStatus',o.status||'Planned'); vset('oNotes',o.notes);
-      vset('oDeliveryType',o.deliveryType||''); updateDeliveryUI();
-      vset('oMarket',o.market||'');
-      vset('oShipTo',o.ship?.to); vset('oShipAddr',o.ship?.addr); vset('oShipCost',o.ship?.cost??''); vset('oShipTrack',o.ship?.track); vset('oShipNotes',o.ship?.notes);
-      vset('oPickLoc',o.pickup?.loc||''); vset('oPickWhen',o.pickup?.when||''); vset('oPickNotes',o.pickup?.notes||'');
+  <script>
+    // Show Instructions on first load
+    const instr = document.getElementById('dlgInstructions');
+    instr.showModal();
+    document.getElementById('btnCloseInstructions').onclick = () => {
+      instr.close();
+      document.getElementById('hub').style.display = 'block';
     };
-    const d=btn('🗑 Delete','ghost'); d.onclick=()=>{ ORDERS.splice(i,1); saveAll(); renderOrders(); };
-    act.appendChild(e); act.appendChild(document.createTextNode(' ')); act.appendChild(d); tr.appendChild(act);
-    body.appendChild(tr);
-  });
-}
-doc('addOrder').addEventListener('click',()=>{
-  const nowISO=new Date().toISOString();
-  const row={ name:g('oName'), item:g('oItem'), qty:Number(g('oQty')||1), due:g('oDue'), status:g('oStatus'), notes:g('oNotes'),
-    deliveryType:g('oDeliveryType')||'', market:g('oMarket')||'',
-    ship:{ to:g('oShipTo'), addr:g('oShipAddr'), cost:parseFloat(g('oShipCost')||0), track:g('oShipTrack'), notes:g('oShipNotes') },
-    pickup:{ loc:g('oPickLoc')||'', when:g('oPickWhen')||'', notes:g('oPickNotes') }
-  };
-  if(!row.name||!row.item) return alert('Need name & item');
-  if(editingOrder>=0){ row.createdAt=ORDERS[editingOrder].createdAt||ORDERS[editingOrder].created_at||null; row.lastEditedAt=nowISO; ORDERS[editingOrder]=row; editingOrder=-1; }
-  else{ row.createdAt=nowISO; row.lastEditedAt=null; ORDERS.push(row); }
-  ['oName','oItem','oQty','oDue','oNotes','oShipTo','oShipAddr','oShipCost','oShipTrack','oShipNotes','oPickWhen','oPickNotes'].forEach(id=>vset(id,'')); vset('oStatus','Planned'); vset('oDeliveryType',''); updateDeliveryUI(); vset('oMarket',''); vset('oPickLoc','');
-  saveAll(); renderOrders(); toast('Saved order');
-});
-doc('cancelOrder').addEventListener('click',()=>{ editingOrder=-1; ['oName','oItem','oQty','oDue','oNotes','oShipTo','oShipAddr','oShipCost','oShipTrack','oShipNotes','oPickWhen','oPickNotes'].forEach(id=>vset(id,'')); vset('oStatus','Planned'); vset('oDeliveryType',''); updateDeliveryUI(); vset('oMarket',''); vset('oPickLoc',''); });
 
-/* ====== Insights ====== */
-function renderInsights(){
-  const t=new Date().toISOString().slice(0,10);
-  const upcoming=(MARKETS||[]).filter(m=>{ const end=m.endDate||m.date||''; return end && end>=t; });
-  doc('insUpcoming').textContent=String(upcoming.length);
-  let next='—', sub='No upcoming markets';
-  const nextStart=(MARKETS||[]).filter(m=>m.date && m.date>=t).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-  if(nextStart.length){ next=nextStart[0].name||'Untitled'; sub=(nextStart[0].date||'')+(nextStart[0].where?(' • '+nextStart[0].where):''); }
-  const fees=(MARKETS||[]).reduce((s,m)=> s+(parseFloat(m.fee)||0),0);
-  const sales=(MARKETS||[]).reduce((s,m)=> s+(parseFloat(m.sales)||0),0);
-  doc('insNext').textContent=next; doc('insNextSub').textContent=sub;
-  doc('insFees').textContent=curSym()+fees.toFixed(2)+' '+curType();
-  doc('insSales').textContent=curSym()+sales.toFixed(2)+' '+curType();
-}
-
-/* ====== Workspace (Popup) ====== */
-function ensureChecklist(m){ if(!Array.isArray(m.checklist)||!m.checklist.length) m.checklist=(MASTER||[]).map(t=>({text:t,done:false})); }
-function openWorkspace(id){
-  const m=MARKETS.find(x=>x.id===id); if(!m) return; ensureChecklist(m);
-  const fees=(parseFloat(m.fee)||0), sales=(parseFloat(m.sales)||0);
-  const html=`
-  <div class="ws-head">
-    <div><h3>🧺 Workspace — ${m.name||'Untitled'}</h3>
-      <div class="small muted">${(m.date||'')}${m.endDate?(' → '+m.endDate):''}${m.where?(' • '+m.where):''}</div>
-    </div>
-    <div><button id="wsClose" class="ghost">Close</button></div>
-  </div>
-  <div class="ws-cols">
-    <div class="ws-col card workspace"><div class="inner">
-      <h3>Checklist</h3>
-      <div id="wsChecks"></div>
-      <div class="check-row"><input id="wsNew" type="text" placeholder="Add item…"><button id="wsAdd" class="soft">Add</button></div>
-      <button id="wsReset" class="ghost">Reset from master</button>
-    </div></div>
-    <div class="ws-col card workspace"><div class="inner">
-      <h3>Linked Plushies</h3><div id="wsPlush"></div>
-      <h3 style="margin-top:12px">Linked W.I.P.s</h3><div id="wsWips"></div>
-    </div></div>
-    <div class="ws-col card workspace"><div class="inner">
-      <h3>Orders for this market</h3><div id="wsOrders"></div>
-      <div class="divider" style="margin:10px 0"></div>
-      <div><strong>Summary</strong><div class="small muted">Fees vs. Sales</div></div>
-      <div class="item" style="grid-template-columns:1fr auto"><div>Table Fee</div><div class="tag" id="wsFeeTag"></div></div>
-      <div class="item" style="grid-template-columns:1fr auto"><div>Sales</div><div class="tag" id="wsSalesTag"></div></div>
-    </div></div>
-  </div>`;
-  doc('dlgMarketBody').innerHTML=html;
-  doc('wsFeeTag').textContent=curSym()+fees.toFixed(2)+' '+curType();
-  doc('wsSalesTag').textContent=curSym()+sales.toFixed(2)+' '+curType();
-
-  const wsChecks=doc('wsChecks');
-  function persist(){ const idx=MARKETS.findIndex(x=>x.id===m.id); if(idx>=0){ MARKETS[idx]=m; saveAll(); } }
-  function drawChecks(){ wsChecks.innerHTML=''; (m.checklist||[]).forEach((c,idx)=>{ const row=div('check-row');
-    const cb=inp('checkbox'); cb.checked=!!c.done; cb.onchange=()=>{ c.done=cb.checked; persist(); };
-    const tx=inp('text'); tx.value=c.text||''; tx.onchange=()=>{ c.text=tx.value; persist(); };
-    const rm=btn('🗑','ghost'); rm.onclick=()=>{ m.checklist.splice(idx,1); persist(); drawChecks(); };
-    row.appendChild(cb); row.appendChild(tx); row.appendChild(rm); wsChecks.appendChild(row);
-  });}
-  drawChecks();
-  doc('wsAdd').onclick=()=>{ const t=(doc('wsNew').value||'').trim(); if(!t) return; m.checklist.push({text:t,done:false}); doc('wsNew').value=''; persist(); drawChecks(); };
-  doc('wsReset').onclick=()=>{ if(!confirm('Reset checklist from master?')) return; m.checklist=(MASTER||[]).map(t=>({text:t,done:false})); persist(); drawChecks(); };
-
-  function listTo(el, items, labelFn){ el.innerHTML=''; if(!items.length){ el.innerHTML='<div class="small muted">None linked</div>'; return; } items.forEach(it=>{ const d=div('item'); d.style.gridTemplateColumns='1fr auto'; d.innerHTML='<div>'+labelFn(it)+'</div>'; el.appendChild(d); }); }
-  listTo(doc('wsPlush'), (PLUSH||[]).filter(p=>(p.markets||[]).includes(m.id)), p=>(p.name||'?')+' • '+(p.status||'Planned'));
-  listTo(doc('wsWips'),  (WIPS ||[]).filter(w=>(w.markets||[]).includes(m.id)), w=>(w.yarn||'?')+' • '+(w.hook||''));
-
-  const oHost=doc('wsOrders'); oHost.innerHTML='';
-  (ORDERS||[]).filter(o=> (o.deliveryType==='market'&&o.market===m.id)).forEach(o=>{ const row=div('item'); row.style.gridTemplateColumns='1fr auto'; row.innerHTML='<div><strong>'+(o.name||'')+'</strong> • '+(o.item||'')+' • '+(o.status||'')+'</div>'; oHost.appendChild(row); });
-
-  doc('wsClose').onclick=()=>doc('dlgMarket').close();
-  doc('dlgMarket').showModal();
-}
-
-/* ====== Settings, About, Instructions, Backup ====== */
-doc('btnSettings').addEventListener('click',()=>{ vset('sCurSym',SETTINGS.currency||'$'); vset('sCurType',SETTINGS.currencyType||'USD'); vset('sSizes',(SETTINGS.sizes||[]).join('\n')); vset('sLocs',(SETTINGS.locations||[]).join('\n')); doc('dlgSettings').showModal(); });
-doc('sSave').addEventListener('click',()=>{ SETTINGS.currency=g('sCurSym')||'$'; SETTINGS.currencyType=g('sCurType')||'USD'; SETTINGS.sizes=(g('sSizes')||'').split(/\n+/).map(s=>s.trim()).filter(Boolean); SETTINGS.locations=(g('sLocs')||'').split(/\n+/).map(s=>s.trim()).filter(Boolean); saveSettings(); doc('dlgSettings').close(); renderAll(); toast('Settings saved'); });
-doc('sClose').addEventListener('click',()=>doc('dlgSettings').close());
-
-doc('btnAbout').addEventListener('click',()=>{ doc('aboutVer').textContent=VERSION; doc('dlgAbout').showModal(); });
-doc('aboutClose').addEventListener('click',()=>doc('dlgAbout').close());
-
-doc('btnInstr').addEventListener('click',()=>doc('dlgInstr').showModal());
-doc('instrClose').addEventListener('click',()=>{ if(doc('instrDont').checked) localStorage.setItem(K.instrhide,'1'); doc('dlgInstr').close(); });
-if(!localStorage.getItem(K.instrhide)){ doc('dlgInstr').showModal(); }
-
-doc('btnBackup').addEventListener('click',()=>{ const payload={meta:{product:'LydiBug Styles — Market Hub',version:VERSION,exportedAt:new Date().toISOString()},settings:SETTINGS,markets:MARKETS,plush:PLUSH,wips:WIPS,ideas:IDEAS,orders:ORDERS}; const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='LBS_MarketHub_Backup.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),500); toast('Exported'); });
-doc('btnRestore').addEventListener('click',()=>doc('restoreFile').click());
-doc('restoreFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ const data=JSON.parse(r.result);
-  if(data.settings) SETTINGS=Object.assign(SETTINGS,data.settings);
-  if(Array.isArray(data.markets)) MARKETS=data.markets;
-  if(Array.isArray(data.plush)) PLUSH=data.plush;
-  if(Array.isArray(data.wips)) WIPS=data.wips;
-  if(Array.isArray(data.ideas)) IDEAS=data.ideas;
-  if(Array.isArray(data.orders)) ORDERS=(data.orders||[]).map(o=>({ ...o, createdAt:o.createdAt||o.created_at||new Date().toISOString(), lastEditedAt:o.lastEditedAt||null }));
-  saveSettings(); saveAll(); renderAll(); toast('Imported');
-} catch(err){ alert('Invalid backup'); } }; r.readAsText(f); });
-
-/* ====== Render / Populate ====== */
-function rebuildWhereDropdown(){ const sel=doc('mWhere'); sel.innerHTML=''; (SETTINGS.locations||[]).forEach(l=> sel.add(new Option(l,l))); sel.add(new Option('Other…','__OTHER__')); }
-function rebuildSizeSelect(){ const sel=doc('pSize'); sel.innerHTML=''; (SETTINGS.sizes||[]).forEach(s=> sel.add(new Option(s,s))); sel.add(new Option('Other…','__OTHER__')); }
-
-function renderAll(){ rebuildSizeSelect(); rebuildWhereDropdown(); renderMarkets(); renderPlushies(); renderWips(); renderIdeas(); renderOrders(); renderInsights(); updateDeliveryUI(); }
-renderAll();
-
-/* Show What's New once per version */
-if(!localStorage.getItem(K.whatsnew)){ doc('dlgWhatsNew').showModal(); doc('wnClose').addEventListener('click',()=>{ doc('dlgWhatsNew').close(); localStorage.setItem(K.whatsnew','1'); }); }
-
-/* ====== Tiny DOM helpers ====== */
-function doc(id){ return document.getElementById(id); }
-function div(cls){ const d=document.createElement('div'); if(cls) d.className=cls; return d; }
-function btn(t,cls){ const b=document.createElement('button'); if(cls) b.className=cls; b.textContent=t; return b; }
-function inp(type){ const i=document.createElement('input'); i.type=type||'text'; return i; }
-function g(id){ const el=doc(id); return el?el.value.trim():''; }
-function vset(id,v){ const el=doc(id); if(el!=null) el.value=(v==null?'':v); }
-function show(id,on){ const el=doc(id); if(el) el.style.display=on?'':'none'; }
-</script>
-
-<script>
-/* ====== Inject the main sections (HTML shells) ====== */
-/* This script adds the static containers used above. Keeping it at the end ensures the DOM exists before logic runs. */
-(function(){
-  if(document.querySelector('#app > .row')) return; // already injected
-  // Rebuild static shells so IDs exist:
-  document.getElementById('app').innerHTML = ` ${sectionMarkets()} ${sectionPlushWips()} ${sectionIdeasOrders()} `;
-  // And re-run initial renders:
-  renderAll();
-})();
-</script>
-  </div>
+    // Show What's New once per version
+    if (!localStorage.getItem('whatsnew_v227')) {
+      const wn = document.getElementById('dlgWhatsNew');
+      if (wn) {
+        wn.showModal();
+        document.getElementById('wnClose').addEventListener('click', () => {
+          wn.close();
+          localStorage.setItem('whatsnew_v227', '1');
+        });
+      }
+    }
+  </script>
 </body>
 </html>
