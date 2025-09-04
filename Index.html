@@ -152,7 +152,140 @@
       <button id="cancelWip" class="ghost">Cancel</button>
     </div>
   </div>
+<!-- 🧾 Customer Orders -->
+<div class="card">
+  <h2>🧾 Customer Orders</h2>
 
+  <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; align-items:end; margin-bottom:10px">
+    <div>
+      <label class="tagline">Customer name</label>
+      <input id="oName" placeholder="e.g., Jamie">
+    </div>
+    <div>
+      <label class="tagline">Item</label>
+      <input id="oItem" placeholder="e.g., Jumbo Octo">
+    </div>
+    <div>
+      <label class="tagline">Qty</label>
+      <input id="oQty" type="number" min="1" step="1" value="1">
+    </div>
+    <div>
+      <label class="tagline">Due date</label>
+      <input id="oDue" type="date">
+    </div>
+
+    <div>
+      <label class="tagline">Status</label>
+      <select id="oStatus">
+        <option>Planned</option>
+        <option>In progress</option>
+        <option>Finished</option>
+        <option>Delivered</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="tagline">Delivery</label>
+      <select id="oDeliveryType">
+        <option value="">— choose —</option>
+        <option value="market">Market</option>
+        <option value="shipping">Shipping</option>
+        <option value="pickup">Pickup</option>
+      </select>
+    </div>
+
+    <!-- Market delivery -->
+    <div id="oDeliveryMarketWrap" style="display:none">
+      <label class="tagline">Deliver at market</label>
+      <select id="oMarket"></select>
+    </div>
+
+    <!-- Shipping delivery -->
+    <div id="oDeliveryShipWrap" style="display:none; grid-column:1 / -1; display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px">
+      <div>
+        <label class="tagline">Ship to (name)</label>
+        <input id="oShipTo">
+      </div>
+      <div style="grid-column:1 / -1">
+        <label class="tagline">Address</label>
+        <input id="oShipAddr" placeholder="Street, city, postal…">
+      </div>
+      <div>
+        <label class="tagline">Shipping cost</label>
+        <input id="oShipCost" type="number" step="0.01" min="0">
+      </div>
+      <div>
+        <label class="tagline">Tracking #</label>
+        <input id="oShipTrack">
+      </div>
+      <div style="grid-column:1 / -1">
+        <label class="tagline">Shipping notes</label>
+        <input id="oShipNotes" placeholder="Optional">
+      </div>
+    </div>
+
+    <!-- Pickup delivery -->
+    <div id="oDeliveryPickWrap" style="display:none; grid-column:1 / -1; display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px">
+      <div>
+        <label class="tagline">Pickup location</label>
+        <select id="oPickLoc"></select>
+      </div>
+      <div>
+        <label class="tagline">Pickup time</label>
+        <input id="oPickWhen" type="datetime-local">
+      </div>
+      <div style="grid-column:1 / -1">
+        <label class="tagline">Pickup notes</label>
+        <input id="oPickNotes" placeholder="Optional">
+      </div>
+    </div>
+
+    <div style="grid-column:1 / -1">
+      <label class="tagline">Order notes</label>
+      <input id="oNotes" placeholder="Optional">
+    </div>
+
+    <div style="grid-column:1 / -1; display:flex; gap:8px">
+      <button id="addOrder">Add / Save</button>
+      <button id="cancelOrder" class="ghost">Cancel</button>
+    </div>
+  </div>
+
+  <div id="orderList"></div>
+</div>
+
+<!-- ⚙️ Settings (expanded) -->
+<div class="card">
+  <h2>⚙️ Settings</h2>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; align-items:end; margin-bottom:10px">
+    <div>
+      <label class="tagline">Currency symbol</label>
+      <input id="sCurSym" placeholder="$">
+    </div>
+    <div>
+      <label class="tagline">Currency type</label>
+      <input id="sCurType" placeholder="USD, CAD…">
+    </div>
+
+    <div style="grid-column:1 / -1">
+      <label class="tagline">Plushie sizes (one per line)</label>
+      <textarea id="sSizes" rows="4" placeholder="Mini (3–5&quot;)\nSmall (6–8&quot;)\nMedium (9–12&quot;)\nLarge (13–16&quot;)\nXL / Jumbo (17–20&quot;)\nGiant (21&quot;+)" ></textarea>
+    </div>
+
+    <div style="grid-column:1 / -1">
+      <label class="tagline">Locations (one per line)</label>
+      <textarea id="sLocs" rows="3" placeholder="Parksville"></textarea>
+    </div>
+
+    <div style="grid-column:1 / -1; display:flex; gap:8px">
+      <button id="sSave">Save settings</button>
+      <button id="sApply" class="ghost">Apply (no save)</button>
+    </div>
+  </div>
+
+  <!-- Optional: size presets helper for Plushies -->
+  <div class="small muted">Tip: after saving sizes here, you’ll get a quick “Sizes” dropdown next to the Plushie Size field.</div>
+</div>
   <div id="wipList"></div>
 </div>
 
@@ -743,6 +876,219 @@ populateMarketMulti(document.getElementById('pMarkets'));
 populateMarketMulti(document.getElementById('wMarkets'));
 renderPlushies();
 renderWips();
+</script>
+  <script>
+/* ========= Orders + Settings Expansion (v2.23.0) ========= */
+const STORE2 = { orders: 'lbs_orders_v1' };
+let ORDERS = [];
+try { ORDERS = JSON.parse(localStorage.getItem(STORE2.orders) || '[]'); } catch {}
+function saveOrders(){ localStorage.setItem(STORE2.orders, JSON.stringify(ORDERS)); }
+
+/* ---- Settings expand (currency, sizes, locations) ---- */
+// SETTINGS already exists in your Markets script. We extend UI to edit it.
+function applySettingsUI(){
+  const s = SETTINGS || {};
+  const $ = id => document.getElementById(id);
+  if($('sCurSym')) $('sCurSym').value = s.currency || '$';
+  if($('sCurType')) $('sCurType').value = s.currencyType || 'USD';
+  if($('sSizes'))   $('sSizes').value = (s.sizes && s.sizes.length) ? s.sizes.join('\n') : 
+    'Mini (3–5")\nSmall (6–8")\nMedium (9–12")\nLarge (13–16")\nXL / Jumbo (17–20")\nGiant (21”+)';
+  if($('sLocs'))    $('sLocs').value  = (s.locations||['Parksville']).join('\n');
+}
+function readSettingsFromUI(persist){
+  const $ = id => document.getElementById(id);
+  const toLines = (t)=> (t||'').split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  SETTINGS.currency     = ($('sCurSym')?.value || '$').trim() || '$';
+  SETTINGS.currencyType = ($('sCurType')?.value || 'USD').trim() || 'USD';
+  SETTINGS.sizes        = toLines($('sSizes')?.value);
+  SETTINGS.locations    = toLines($('sLocs')?.value);
+  if(persist) saveSettings();
+  // refresh spots that depend on settings:
+  rebuildWhereDropdown();               // markets location dropdown
+  buildPlushSizePresetHelper();         // plush size helper
+}
+
+document.getElementById('sSave').addEventListener('click', ()=>{
+  readSettingsFromUI(true);
+  alert('Settings saved');
+});
+document.getElementById('sApply').addEventListener('click', ()=>{
+  readSettingsFromUI(false);
+  alert('Settings applied (not saved)');
+});
+applySettingsUI();
+
+/* ---- Plushie Size preset helper ---- */
+function buildPlushSizePresetHelper(){
+  // add a small preset dropdown + "Use" button next to pSize input
+  const sizeInput = document.getElementById('pSize');
+  if(!sizeInput) return;
+  // avoid duplicates
+  if(document.getElementById('pSizePreset')) return;
+
+  const wrap = sizeInput.parentElement;
+  const sel  = document.createElement('select');
+  sel.id = 'pSizePreset';
+  sel.style.marginTop = '6px';
+  sel.style.width = '100%';
+  (SETTINGS.sizes||[]).forEach(sz=>{
+    const o = document.createElement('option'); o.value=sz; o.textContent=sz; sel.appendChild(o);
+  });
+  const useBtn = document.createElement('button');
+  useBtn.textContent = 'Use selected size';
+  useBtn.className = 'ghost';
+  useBtn.style.marginTop = '6px';
+  useBtn.onclick = ()=>{ if(sel.value) sizeInput.value = sel.value; };
+
+  wrap.appendChild(sel);
+  wrap.appendChild(useBtn);
+}
+buildPlushSizePresetHelper();
+
+/* ---- Orders UI helpers ---- */
+function populateMarketSelect(sel, includeBlank){
+  if(!sel) return;
+  sel.innerHTML = '';
+  if(includeBlank) sel.add(new Option('—',''));
+  (MARKETS||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'')).forEach(m=>{
+    sel.add(new Option(m.name + (m.date?(' • '+m.date):''), m.id));
+  });
+}
+function populatePickupLocations(sel){
+  if(!sel) return;
+  sel.innerHTML = '';
+  (SETTINGS.locations||[]).forEach(l=> sel.add(new Option(l,l)));
+}
+function updateDeliveryUI(){
+  const v = (document.getElementById('oDeliveryType')?.value)||'';
+  document.getElementById('oDeliveryMarketWrap').style.display = (v==='market')?'':'none';
+  document.getElementById('oDeliveryShipWrap').style.display   = (v==='shipping')?'':'none';
+  document.getElementById('oDeliveryPickWrap').style.display   = (v==='pickup')?'':'none';
+}
+document.getElementById('oDeliveryType').addEventListener('change', updateDeliveryUI);
+
+/* ---- Render Orders ---- */
+function renderOrders(){
+  const host = document.getElementById('orderList'); if(!host) return;
+  host.innerHTML = '';
+
+  // table
+  const table = document.createElement('table');
+  table.style.width='100%'; table.style.borderCollapse='collapse';
+  table.innerHTML = `
+    <thead><tr>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Customer</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Item</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Qty</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Due</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Status</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Delivery</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Notes</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px"></th>
+    </tr></thead>
+    <tbody></tbody>`;
+  const tbody = table.querySelector('tbody');
+
+  ORDERS.forEach((o,i)=>{
+    const tr = document.createElement('tr');
+    function td(html){ const x=document.createElement('td'); x.style.padding='6px'; x.style.borderBottom='1px solid #eee'; if(html!==undefined){ x.innerHTML=html; } return x; }
+
+    tr.appendChild(td(o.name||'')); tr.appendChild(td(o.item||'')); tr.appendChild(td(String(o.qty||1)));
+    tr.appendChild(td(o.due||'')); tr.appendChild(td(o.status||''));
+
+    let dLabel = '—';
+    if(o.deliveryType==='market') dLabel = 'Market: '+(getMarketName(o.market||'')||'—');
+    if(o.deliveryType==='shipping'){
+      const cost = isNaN(o.ship?.cost) ? 0 : Number(o.ship.cost);
+      dLabel = 'Shipping' + (cost>0 ? (' ('+curSym()+cost.toFixed(2)+' '+curType()+')') : '');
+    }
+    if(o.deliveryType==='pickup'){ dLabel = 'Pickup'+(o.pickup?.loc?(' ('+o.pickup.loc+')'):''); }
+    tr.appendChild(td(dLabel));
+
+    tr.appendChild(td(o.notes||''));
+
+    const act = td();
+    const e = document.createElement('button'); e.className='soft'; e.textContent='✏️ Edit';
+    e.onclick=()=>{
+      editingOrder=i;
+      vset('oName',o.name); vset('oItem',o.item); vset('oQty',o.qty||1); vset('oDue',o.due); vset('oStatus',o.status||'Planned'); vset('oNotes',o.notes);
+      vset('oDeliveryType',o.deliveryType||''); updateDeliveryUI();
+      populateMarketSelect(document.getElementById('oMarket'), true);
+      populatePickupLocations(document.getElementById('oPickLoc'));
+      vset('oMarket',o.market||'');
+      vset('oShipTo',o.ship?.to); vset('oShipAddr',o.ship?.addr); vset('oShipCost',o.ship?.cost??''); vset('oShipTrack',o.ship?.track); vset('oShipNotes',o.ship?.notes);
+      vset('oPickLoc',o.pickup?.loc||''); vset('oPickWhen',o.pickup?.when||''); vset('oPickNotes',o.pickup?.notes||'');
+    };
+    const d = document.createElement('button'); d.className='ghost'; d.textContent='🗑 Delete';
+    d.onclick=()=>{ ORDERS.splice(i,1); saveOrders(); renderOrders(); };
+
+    act.appendChild(e); act.appendChild(document.createTextNode(' ')); act.appendChild(d);
+    tr.appendChild(act);
+    tbody.appendChild(tr);
+  });
+
+  host.appendChild(table);
+}
+
+/* ---- Add / Save order ---- */
+let editingOrder = -1;
+document.getElementById('addOrder').addEventListener('click', ()=>{
+  const row = {
+    name:  g('oName'), item: g('oItem'), qty: Number(g('oQty')||1),
+    due:   g('oDue'),  status: g('oStatus'), notes: g('oNotes'),
+    deliveryType: g('oDeliveryType')||'',
+    market: g('oMarket')||'',
+    ship:   { to:g('oShipTo'), addr:g('oShipAddr'), cost:parseFloat(g('oShipCost')||0), track:g('oShipTrack'), notes:g('oShipNotes') },
+    pickup: { loc:g('oPickLoc')||'', when:g('oPickWhen')||'', notes:g('oPickNotes') }
+  };
+  if(!row.name || !row.item) return alert('Need customer name and item');
+
+  if(editingOrder>=0){ ORDERS[editingOrder]=row; editingOrder=-1; }
+  else { ORDERS.push(row); }
+
+  // clear
+  ['oName','oItem','oQty','oDue','oNotes','oShipTo','oShipAddr','oShipCost','oShipTrack','oShipNotes','oPickWhen','oPickNotes'].forEach(id=>vset(id,''));
+  vset('oStatus','Planned'); vset('oDeliveryType',''); updateDeliveryUI(); vset('oMarket',''); vset('oPickLoc','');
+
+  saveOrders(); renderOrders();
+});
+document.getElementById('cancelOrder').addEventListener('click', ()=>{
+  editingOrder=-1;
+  ['oName','oItem','oQty','oDue','oNotes','oShipTo','oShipAddr','oShipCost','oShipTrack','oShipNotes','oPickWhen','oPickNotes'].forEach(id=>vset(id,''));
+  vset('oStatus','Planned'); vset('oDeliveryType',''); updateDeliveryUI(); vset('oMarket',''); vset('oPickLoc','');
+});
+
+/* ---- Initial hydrate for Orders + Settings ---- */
+populateMarketSelect(document.getElementById('oMarket'), true);
+populatePickupLocations(document.getElementById('oPickLoc'));
+updateDeliveryUI();
+renderOrders();
+
+/* ---- Integrate orders into Workspace popup ---- */
+const _openWS = openWorkspace;
+openWorkspace = function(id){
+  _openWS(id);
+  const m = MARKETS.find(x=>x.id===id); if(!m) return;
+
+  const host = document.getElementById('wsOrders');
+  if(!host) return;
+  const items = (ORDERS||[]).filter(o => o.deliveryType==='market' && o.market===m.id);
+  if(!items.length){ host.innerHTML = '<div class="small muted">No orders for this market yet</div>'; return; }
+  host.innerHTML = '';
+  items.forEach(o=>{
+    const row = document.createElement('div'); row.className='item'; row.style.gridTemplateColumns='1fr auto';
+    row.innerHTML = `<div><strong>${o.name||''}</strong> • ${o.item||''} • ${o.status||''}</div>`;
+    host.appendChild(row);
+  });
+};
+
+/* ---- Rebuild market/location-dependent dropdowns whenever markets change ---- */
+const _renderMk = renderMarkets;
+renderMarkets = function(){
+  _renderMk();
+  populateMarketSelect(document.getElementById('oMarket'), true);
+  populatePickupLocations(document.getElementById('oPickLoc'));
+};
 </script>
 </body>
 </html>
