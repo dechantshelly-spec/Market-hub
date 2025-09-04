@@ -28,31 +28,55 @@
   </header>
 
   <main id="hub" style="display:none;">
-    <div class="card">
-      <h2>📅 Upcoming Markets</h2>
-      <p>Market management will go here.</p>
+  <div class="card">
+    <h2>📅 Upcoming Markets</h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; align-items:end; margin-bottom:10px">
+      <div>
+        <label class="tagline">Market name</label>
+        <input id="mName" placeholder="e.g., Ho Ho Ho Christmas Market">
+      </div>
+      <div>
+        <label class="tagline">Start date</label>
+        <input id="mDate" type="date">
+      </div>
+      <div>
+        <label class="tagline">End date (optional)</label>
+        <input id="mEnd" type="date">
+      </div>
+      <div>
+        <label class="tagline">Location</label>
+        <select id="mWhere"></select>
+      </div>
+      <div>
+        <label class="tagline">Table fee</label>
+        <input id="mFee" type="number" min="0" step="0.01" placeholder="0.00">
+      </div>
+      <div style="grid-column:1 / -1; display:flex; gap:8px">
+        <input id="mNotes" placeholder="Notes (optional)" style="flex:1">
+        <button id="addMarket">➕ Add Market</button>
+      </div>
     </div>
 
-    <div class="card">
-      <h2>🧸 Plushie Creations</h2>
-      <p>Track plushies here.</p>
-    </div>
+    <div id="marketList"></div>
+  </div>
 
-    <div class="card">
-      <h2>🧶 W.I.P.s</h2>
-      <p>Track current works in progress here.</p>
-    </div>
+  <div class="card">
+    <h2>🗂️ List of Markets</h2>
+    <input id="mSearch" placeholder="Search by name, date, or location…" style="margin-bottom:10px; width:100%">
+    <div id="mDir"></div>
+  </div>
 
-    <div class="card">
-      <h2>📦 Orders</h2>
-      <p>Track customer and custom orders here.</p>
+  <div class="card">
+    <h2>📊 Insights</h2>
+    <div id="insights">
+      <div>Total upcoming: <strong id="insUpcoming">0</strong></div>
+      <div>Next market: <strong id="insNext">—</strong> <span id="insNextSub" class="tagline"></span></div>
+      <div>Total fees: <strong id="insFees">$0.00 USD</strong></div>
+      <div>Total sales: <strong id="insSales">$0.00 USD</strong></div>
     </div>
-
-    <div class="card">
-      <h2>⚙️ Settings</h2>
-      <p>Adjust currency, sizes, locations here.</p>
-    </div>
-  </main>
+  </div>
+</main>
 
   <!-- Instructions popup -->
   <dialog id="dlgInstructions">
@@ -74,7 +98,10 @@
     </ul>
     <button id="wnClose">Got it</button>
   </dialog>
-
+<!-- Market Workspace dialog -->
+<dialog id="dlgMarket">
+  <div id="dlgMarketBody"></div>
+</dialog>
   <script>
     // Show Instructions on first load
     const instr = document.getElementById('dlgInstructions');
@@ -96,5 +123,296 @@
       }
     }
   </script>
+  <script>
+/* ========= Markets + Workspace (v2.22.8) ========= */
+const STORAGE = {
+  markets: 'lbs_mk_markets_v8',
+  settings: 'lbs_mk_settings_v3'
+};
+
+// Settings (for currency + locations)
+let SETTINGS = { currency: '$', currencyType: 'USD', locations: ['Parksville'] };
+try { SETTINGS = Object.assign(SETTINGS, JSON.parse(localStorage.getItem(STORAGE.settings)||'{}')); } catch {}
+
+function saveSettings(){ localStorage.setItem(STORAGE.settings, JSON.stringify(SETTINGS)); }
+function curSym(){ return SETTINGS.currency || '$'; }
+function curType(){ return SETTINGS.currencyType || 'USD'; }
+
+// Markets
+let MARKETS = [];
+try { MARKETS = JSON.parse(localStorage.getItem(STORAGE.markets) || '[]'); } catch {}
+function saveMarkets(){ localStorage.setItem(STORAGE.markets, JSON.stringify(MARKETS)); }
+
+function uid(){ return Math.random().toString(36).slice(2) + Date.now().toString(36); }
+function doc(id){ return document.getElementById(id); }
+
+function rebuildWhereDropdown(){
+  const sel = doc('mWhere');
+  if(!sel) return;
+  sel.innerHTML = '';
+  (SETTINGS.locations||[]).forEach(l => sel.add(new Option(l, l)));
+  sel.add(new Option('Other…','__OTHER__'));
+}
+
+function statusBadge(m){
+  const today = new Date().toISOString().slice(0,10);
+  const start = m.date;
+  const end = m.endDate || m.date;
+  if (!start) return '—';
+  if (today < start) {
+    const dleft = Math.ceil((new Date(start) - new Date(today))/86400000);
+    return 'D-'+dleft;
+  } else if (today >= start && today <= end) {
+    return 'ON';
+  }
+  return 'PAST';
+}
+
+function getMarketName(id){
+  const m = MARKETS.find(x => x.id === id);
+  return m ? m.name : '';
+}
+
+function renderMarkets(){
+  const list = doc('marketList'); if(!list) return;
+  list.innerHTML = '';
+  const arr = (MARKETS||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+
+  arr.forEach(m=>{
+    const row = document.createElement('div');
+    row.style.cssText = 'display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;border:1px solid #ddd;border-radius:8px;padding:10px;margin-bottom:8px;background:#fff';
+
+    const feeTxt = m.fee ? ` • ${curSym()}${Number(m.fee).toFixed(2)} ${curType()}` : '';
+    const dates = (m.date? (' • '+m.date) : '') + (m.endDate ? (' → '+m.endDate) : '');
+    const left = document.createElement('div');
+    left.innerHTML = `<strong>${m.name||'Untitled'}</strong>${dates}${m.where?(' • '+m.where):''}${feeTxt}`;
+
+    const badge = document.createElement('div');
+    badge.className = 'tagline';
+    badge.textContent = statusBadge(m);
+
+    const open = document.createElement('button');
+    open.textContent = 'Open';
+    open.onclick = ()=> openWorkspace(m.id);
+
+    const del = document.createElement('button');
+    del.textContent = 'Delete';
+    del.style.background = '#fff';
+    del.onclick = ()=>{
+      if(confirm('Delete this market?')){
+        MARKETS = MARKETS.filter(x=>x.id!==m.id);
+        saveMarkets(); renderAll();
+      }
+    };
+
+    row.appendChild(left);
+    row.appendChild(badge);
+    row.appendChild(open);
+    row.appendChild(del);
+    list.appendChild(row);
+  });
+
+  // Insights helpers and directory
+  renderInsights();
+  renderMarketDirectory();
+}
+
+function renderMarketDirectory(){
+  const host = doc('mDir'); if(!host) return; host.innerHTML='';
+  const q = (doc('mSearch').value || '').toLowerCase();
+  (MARKETS||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')).filter(m=>{
+    const hay = [m.name, m.date, (m.endDate||''), m.where].join(' ').toLowerCase();
+    return !q || hay.includes(q);
+  }).forEach(m=>{
+    const row = document.createElement('div');
+    row.style.cssText='display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border:1px solid #ddd;border-radius:8px;padding:10px;margin-bottom:8px;background:#fff';
+    const left = document.createElement('div');
+    left.innerHTML = `<strong>${m.name||'Untitled'}</strong>${m.date?(' • '+m.date):''}${m.endDate?(' → '+m.endDate):''}${m.where?(' • '+m.where):''}`;
+    const open = document.createElement('button'); open.textContent='Open'; open.onclick=()=>openWorkspace(m.id);
+    row.appendChild(left); row.appendChild(open);
+    host.appendChild(row);
+  });
+}
+
+function renderInsights(){
+  const t = new Date().toISOString().slice(0,10);
+  const upcoming = (MARKETS||[]).filter(m=> (m.endDate||m.date||'') >= t );
+  const nextStart = (MARKETS||[]).filter(m=> m.date && m.date >= t).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  const fees = (MARKETS||[]).reduce((s,m)=> s + (parseFloat(m.fee)||0), 0);
+  const sales = (MARKETS||[]).reduce((s,m)=> s + (parseFloat(m.sales)||0), 0);
+
+  if(doc('insUpcoming')) doc('insUpcoming').textContent = String(upcoming.length);
+  if(doc('insNext')) doc('insNext').textContent = nextStart.length ? (nextStart[0].name||'Untitled') : '—';
+  if(doc('insNextSub')) doc('insNextSub').textContent = nextStart.length ? ((nextStart[0].date||'') + (nextStart[0].where?(' • '+nextStart[0].where):'')) : 'No upcoming markets';
+  if(doc('insFees')) doc('insFees').textContent = `${curSym()}${fees.toFixed(2)} ${curType()}`;
+  if(doc('insSales')) doc('insSales').textContent = `${curSym()}${sales.toFixed(2)} ${curType()}`;
+}
+
+// Add market
+(function bindMarketForm(){
+  const addBtn = doc('addMarket');
+  if(!addBtn) return;
+
+  // Build locations dropdown
+  rebuildWhereDropdown();
+
+  addBtn.addEventListener('click', ()=>{
+    let where = (doc('mWhere').value || '');
+    if (where === '__OTHER__') {
+      const v = prompt('New location?','');
+      if (v) {
+        where = v.trim();
+        if (where && !SETTINGS.locations.includes(where)) {
+          SETTINGS.locations.push(where);
+          saveSettings();
+        }
+      } else {
+        where = '';
+      }
+    }
+
+    const m = {
+      id: uid(),
+      name: (doc('mName').value||'').trim(),
+      date: doc('mDate').value || '',
+      endDate: doc('mEnd').value || '',
+      where,
+      fee: parseFloat(doc('mFee').value||0) || 0,
+      sales: 0,
+      notes: (doc('mNotes').value||'').trim(),
+      checklist: [] // filled from master later if needed
+    };
+    if (!m.name) { alert('Market needs a name'); return; }
+
+    MARKETS.push(m);
+    ['mName','mDate','mEnd','mFee','mNotes'].forEach(id=>{ const el=doc(id); if(el) el.value=''; });
+    if (doc('mWhere')) doc('mWhere').value='';
+
+    saveMarkets();
+    renderMarkets();
+  });
+
+  // Search
+  const s = doc('mSearch');
+  if (s) s.addEventListener('input', renderMarketDirectory);
+})();
+
+/* ===== Workspace popup ===== */
+const MASTER = ["Float & Square reader","Cash box","Business cards","Bags","Tablecloth","Display risers","Signage","Scissors/Tape","Sanitizer","Water & snacks"];
+
+function ensureChecklist(m){
+  if (!Array.isArray(m.checklist) || !m.checklist.length) {
+    m.checklist = MASTER.map(t=>({text:t, done:false}));
+  }
+}
+
+function openWorkspace(id){
+  const m = MARKETS.find(x=>x.id===id); if(!m) return;
+  ensureChecklist(m);
+  const fees = (parseFloat(m.fee)||0);
+  const sales = (parseFloat(m.sales)||0);
+
+  const html = `
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px">
+    <div>
+      <h3>🧺 Workspace — ${m.name||'Untitled'}</h3>
+      <div class="tagline">${(m.date||'')}${m.endDate?(' → '+m.endDate):''}${m.where?(' • '+m.where):''}</div>
+    </div>
+    <div><button id="wsClose">Close</button></div>
+  </div>
+
+  <div style="display:flex;gap:12px;flex-wrap:wrap">
+    <div style="flex:1 1 280px" class="card">
+      <h3>Checklist</h3>
+      <div id="wsChecks"></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input id="wsNew" type="text" placeholder="Add item…" style="flex:1">
+        <button id="wsAdd">Add</button>
+      </div>
+      <button id="wsReset" style="background:#fff">Reset from master</button>
+    </div>
+
+    <div style="flex:1 1 280px" class="card">
+      <h3>Linked Plushies</h3>
+      <div id="wsPlush"><div class="tagline">Coming when we add Plushies</div></div>
+      <h3 style="margin-top:12px">Linked W.I.P.s</h3>
+      <div id="wsWips"><div class="tagline">Coming when we add W.I.P.s</div></div>
+    </div>
+
+    <div style="flex:1 1 280px" class="card">
+      <h3>Orders for this market</h3>
+      <div id="wsOrders"><div class="tagline">Coming when we add Orders</div></div>
+      <div style="height:1px;background:#ddd;margin:10px 0"></div>
+      <div><strong>Summary</strong><div class="tagline">Fees vs. Sales</div></div>
+      <div style="display:flex;justify-content:space-between"><div>Table Fee</div><div id="wsFeeTag" class="tagline"></div></div>
+      <div style="display:flex;justify-content:space-between"><div>Sales</div><div id="wsSalesTag" class="tagline"></div></div>
+    </div>
+  </div>`;
+
+  doc('dlgMarketBody').innerHTML = html;
+
+  // summary tags
+  doc('wsFeeTag').textContent   = `${curSym()}${fees.toFixed(2)} ${curType()}`;
+  doc('wsSalesTag').textContent = `${curSym()}${sales.toFixed(2)} ${curType()}`;
+
+  // persist
+  function persist(){
+    const idx = MARKETS.findIndex(x=>x.id===m.id);
+    if (idx >= 0) { MARKETS[idx] = m; saveMarkets(); }
+  }
+
+  // checklist render
+  const wsChecks = doc('wsChecks');
+  function drawChecks(){
+    wsChecks.innerHTML = '';
+    (m.checklist||[]).forEach((c,idx)=>{
+      const row = document.createElement('div');
+      row.style.cssText='display:flex;gap:8px;align-items:center;margin-bottom:6px';
+
+      const cb = document.createElement('input'); cb.type='checkbox'; cb.checked=!!c.done;
+      cb.onchange = ()=>{ c.done = cb.checked; persist(); };
+
+      const tx = document.createElement('input'); tx.type='text'; tx.value = c.text || '';
+      tx.onchange = ()=>{ c.text = tx.value; persist(); };
+
+      const rm = document.createElement('button'); rm.textContent='🗑'; rm.style.background='#fff';
+      rm.onclick = ()=>{ m.checklist.splice(idx,1); persist(); drawChecks(); };
+
+      row.appendChild(cb); row.appendChild(tx); row.appendChild(rm);
+      wsChecks.appendChild(row);
+    });
+  }
+  drawChecks();
+
+  // add/reset
+  const addBtn = doc('wsAdd'); if(addBtn) addBtn.onclick = ()=>{
+    const t = (doc('wsNew').value||'').trim(); if(!t) return;
+    (m.checklist||(m.checklist=[])).push({text:t, done:false});
+    doc('wsNew').value = '';
+    persist(); drawChecks();
+  };
+  const resetBtn = doc('wsReset'); if(resetBtn) resetBtn.onclick = ()=>{
+    if(!confirm('Reset checklist from master?')) return;
+    m.checklist = MASTER.map(t=>({text:t,done:false}));
+    persist(); drawChecks();
+  };
+
+  // close
+  const close = doc('wsClose'); if(close) close.onclick = ()=> doc('dlgMarket').close();
+
+  // show
+  doc('dlgMarket').showModal();
+}
+
+// Initial render once Instructions are closed (hub is visible)
+(function boot(){
+  // Rebuild locations dropdown
+  rebuildWhereDropdown();
+  renderMarkets();
+
+  // Wire search if present
+  const s = doc('mSearch'); if (s) s.addEventListener('input', renderMarketDirectory);
+})();
+</script>
 </body>
 </html>
