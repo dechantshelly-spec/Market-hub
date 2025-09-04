@@ -74,7 +74,11 @@ dialog{border:none;border-radius:14px;box-shadow:var(--glow);padding:16px;max-wi
 <!-- Instructions (Welcome) -->
 <dialog id="dlgInstr">
   <h3>🌸 Welcome to LydiBug Styles — Market Hub</h3>
-  <p><strong>Hey, I’m Shelly</strong> (LydiBug Styles). I built this hub for my crochet market workflow and I’m sharing it so other makers can <em>simplify their hustle</em> too. Thanks so much for trying it!</p>
+  <p><button 
+  onclick="document.getElementById('instructions').style.display='none'; 
+           document.getElementById('hub').style.display='block';">
+  Close
+</button><<strong>Hey, I’m Shelly</strong> (LydiBug Styles). I built this hub for my crochet market workflow and I’m sharing it so other makers can <em>simplify their hustle</em> too. Thanks so much for trying it!</p>
   <ol>
     <li><strong>Add a market</strong> — name, start & end date, location, and table fee.</li>
     <li><strong>Add Plushies & W.I.P.s</strong> — then assign them to one or more markets.</li>
@@ -158,6 +162,7 @@ function sectionMarkets(){ return `
 <div class="row">
   <section class="card" style="flex:2 1 600px">
     <div class="inner">
+<div id="hub" style="display:none;">
       <h2>📅 Upcoming Markets</h2>
       <div class="row">
         <input id="mName" placeholder="Market name">
@@ -619,5 +624,6 @@ function show(id,on){ const el=doc(id); if(el) el.style.display=on?'':'none'; }
   renderAll();
 })();
 </script>
+  </div>
 </body>
 </html>
