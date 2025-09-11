@@ -3,1092 +3,223 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LydiBug Styles Market Hub</title>
-  <style>
-    body { font-family: system-ui, Arial, sans-serif; margin:0; background:#fafafa; }
-    header { display:flex; align-items:center; padding:10px; background:#fff; border-bottom:1px solid #ddd; }
-    header img { width:40px; height:40px; border-radius:8px; margin-right:10px; }
-    h1 { font-size:1.2rem; margin:0; }
-    .tagline { font-size:0.9rem; color:#666; }
-    main { padding:20px; }
-    .card { background:#fff; border:1px solid #ddd; border-radius:8px; padding:16px; margin-bottom:16px; }
-    dialog { border:1px solid #ccc; border-radius:8px; padding:20px; }
-    dialog::backdrop { background:rgba(0,0,0,0.5); }
-    button { padding:6px 12px; margin:4px; border-radius:6px; border:1px solid #888; background:#eee; cursor:pointer; }
-    button:hover { background:#ddd; }
-  </style>
+  <title>LydiBug Styles — Market Hub</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <img src="https://via.placeholder.com/40x40.png?text=L" alt="Logo">
-    <div>
-      <h1>LydiBug Styles — Market Hub v2.22.7</h1>
+  <header class="appbar">
+    <img class="brand" src="assets/icons/icon-192.png" alt="LydiBug Styles">
+    <div class="titles">
+      <h1>LydiBug Styles — Market Hub <span id="ver">v2.23.1</span></h1>
       <div class="tagline">Simplify your hustle</div>
     </div>
   </header>
 
   <main id="hub" style="display:none;">
-  <div class="card">
-    <h2>📅 Upcoming Markets</h2>
-
-    <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; align-items:end; margin-bottom:10px">
-      <div>
-        <label class="tagline">Market name</label>
-        <input id="mName" placeholder="e.g., Ho Ho Ho Christmas Market">
+    <!-- Markets -->
+    <section class="card">
+      <h2>📅 Upcoming Markets</h2>
+      <div class="grid g4">
+        <div>
+          <label class="hint">Market name</label>
+          <input id="mName" placeholder="e.g., Ho Ho Ho Christmas Market">
+        </div>
+        <div>
+          <label class="hint">Start date</label>
+          <input id="mDate" type="date">
+        </div>
+        <div>
+          <label class="hint">End date (optional)</label>
+          <input id="mEnd" type="date">
+        </div>
+        <div>
+          <label class="hint">Location</label>
+          <select id="mWhere"></select>
+        </div>
+        <div>
+          <label class="hint">Table fee</label>
+          <input id="mFee" type="number" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="span">
+          <input id="mNotes" placeholder="Notes (optional)">
+        </div>
+        <div class="span row">
+          <button id="addMarket" class="primary">➕ Add Market</button>
+        </div>
       </div>
-      <div>
-        <label class="tagline">Start date</label>
-        <input id="mDate" type="date">
+      <div id="marketList"></div>
+    </section>
+
+    <!-- Market Directory -->
+    <section class="card">
+      <h2>🗂️ List of Markets</h2>
+      <input id="mSearch" placeholder="Search by name, date, or location…" class="mb10">
+      <div id="mDir"></div>
+    </section>
+
+    <!-- Insights -->
+    <section class="card">
+      <h2>📊 Insights</h2>
+      <ul class="facts">
+        <li>Total upcoming: <strong id="insUpcoming">0</strong></li>
+        <li>Next market: <strong id="insNext">—</strong> <span id="insNextSub" class="hint"></span></li>
+        <li>Total vendor fees: <strong id="insFees">$0.00 USD</strong></li>
+        <li>Total sales: <strong id="insSales">$0.00 USD</strong></li>
+      </ul>
+    </section>
+
+    <!-- Plushies -->
+    <section class="card">
+      <h2>🧸 Plushie Creations</h2>
+      <div class="grid g4">
+        <div>
+          <label class="hint">Name</label>
+          <input id="pName" placeholder="e.g., Jumbo Octo">
+        </div>
+        <div>
+          <label class="hint">Size</label>
+          <input id="pSize" placeholder="e.g., Medium">
+          <!-- size preset will be injected below this input -->
+        </div>
+        <div>
+          <label class="hint">Status</label>
+          <select id="pStatus">
+            <option>Planned</option><option>In progress</option>
+            <option>Finished</option><option>Delivered</option>
+          </select>
+        </div>
+        <div>
+          <label class="hint">Price</label>
+          <input id="pPrice" type="number" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="span">
+          <label class="hint">Assign to markets (multi-select)</label>
+          <select id="pMarkets" multiple size="3"></select>
+        </div>
+        <div class="span row">
+          <input id="pNotes" placeholder="Notes (optional)" class="grow">
+          <button id="addPlush" class="primary">Add / Save</button>
+          <button id="cancelPlush" class="ghost">Cancel</button>
+        </div>
       </div>
-      <div>
-        <label class="tagline">End date (optional)</label>
-        <input id="mEnd" type="date">
+      <div id="plushList"></div>
+    </section>
+
+    <!-- WIPs -->
+    <section class="card">
+      <h2>🧶 W.I.P.s</h2>
+      <div class="grid g4">
+        <div><label class="hint">Yarn</label><input id="wYarn" placeholder="e.g., Bernat Blanket"></div>
+        <div><label class="hint">Hook</label><input id="wHook" placeholder="e.g., 4.5 mm"></div>
+        <div><label class="hint">Pattern link</label><input id="wLink" placeholder="https://…"></div>
+        <div><label class="hint">Time</label><input id="wTime" placeholder="hh:mm"></div>
+        <div class="span">
+          <label class="hint">Assign to markets (multi-select)</label>
+          <select id="wMarkets" multiple size="3"></select>
+        </div>
+        <div class="span row">
+          <input id="wNotes" placeholder="Notes (optional)" class="grow">
+          <button id="addWip" class="primary">Add / Save</button>
+          <button id="cancelWip" class="ghost">Cancel</button>
+        </div>
       </div>
-      <div>
-        <label class="tagline">Location</label>
-        <select id="mWhere"></select>
+      <div id="wipList"></div>
+    </section>
+
+    <!-- Orders -->
+    <section class="card">
+      <h2>🧾 Customer Orders</h2>
+      <div class="grid g4">
+        <div><label class="hint">Customer</label><input id="oName"></div>
+        <div><label class="hint">Item</label><input id="oItem"></div>
+        <div><label class="hint">Qty</label><input id="oQty" type="number" min="1" step="1" value="1"></div>
+        <div><label class="hint">Due</label><input id="oDue" type="date"></div>
+        <div><label class="hint">Status</label>
+          <select id="oStatus"><option>Planned</option><option>In progress</option><option>Finished</option><option>Delivered</option></select>
+        </div>
+        <div><label class="hint">Delivery</label>
+          <select id="oDeliveryType">
+            <option value="">— choose —</option>
+            <option value="market">Market</option>
+            <option value="shipping">Shipping</option>
+            <option value="pickup">Pickup</option>
+          </select>
+        </div>
+        <div id="oDeliveryMarketWrap" style="display:none">
+          <label class="hint">Deliver at market</label>
+          <select id="oMarket"></select>
+        </div>
+        <div id="oDeliveryShipWrap" class="span grid g4" style="display:none">
+          <div><label class="hint">Ship to</label><input id="oShipTo"></div>
+          <div class="span"><label class="hint">Address</label><input id="oShipAddr"></div>
+          <div><label class="hint">Shipping cost</label><input id="oShipCost" type="number" step="0.01" min="0"></div>
+          <div><label class="hint">Tracking #</label><input id="oShipTrack"></div>
+          <div class="span"><label class="hint">Shipping notes</label><input id="oShipNotes"></div>
+        </div>
+        <div id="oDeliveryPickWrap" class="span grid g4" style="display:none">
+          <div><label class="hint">Pickup location</label><select id="oPickLoc"></select></div>
+          <div><label class="hint">Pickup time</label><input id="oPickWhen" type="datetime-local"></div>
+          <div class="span"><label class="hint">Pickup notes</label><input id="oPickNotes"></div>
+        </div>
+        <div class="span"><label class="hint">Order notes</label><input id="oNotes"></div>
+        <div class="span row">
+          <button id="addOrder" class="primary">Add / Save</button>
+          <button id="cancelOrder" class="ghost">Cancel</button>
+        </div>
       </div>
-      <div>
-        <label class="tagline">Table fee</label>
-        <input id="mFee" type="number" min="0" step="0.01" placeholder="0.00">
+      <div id="orderList"></div>
+    </section>
+
+    <!-- Settings -->
+    <section class="card">
+      <h2>⚙️ Settings</h2>
+      <div class="grid g2">
+        <div><label class="hint">Currency symbol</label><input id="sCurSym" placeholder="$"></div>
+        <div><label class="hint">Currency type</label><input id="sCurType" placeholder="USD, CAD…"></div>
+        <div class="span"><label class="hint">Plushie sizes (one per line)</label>
+          <textarea id="sSizes" rows="4">Mini (3–5")
+Small (6–8")
+Medium (9–12")
+Large (13–16")
+XL / Jumbo (17–20")
+Giant (21”+)</textarea></div>
+        <div class="span"><label class="hint">Locations (one per line)</label>
+          <textarea id="sLocs" rows="3">Parksville</textarea></div>
+        <div class="span row">
+          <button id="sSave" class="primary">Save settings</button>
+          <button id="sApply" class="ghost">Apply (no save)</button>
+        </div>
       </div>
-      <div style="grid-column:1 / -1; display:flex; gap:8px">
-        <input id="mNotes" placeholder="Notes (optional)" style="flex:1">
-        <button id="addMarket">➕ Add Market</button>
-      </div>
-    </div>
+      <div class="hint">After saving sizes, a size preset dropdown appears under the Plushie Size field.</div>
+    </section>
+  </main>
 
-    <div id="marketList"></div>
-  </div>
-
-  <div class="card">
-    <h2>🗂️ List of Markets</h2>
-    <input id="mSearch" placeholder="Search by name, date, or location…" style="margin-bottom:10px; width:100%">
-    <div id="mDir"></div>
-  </div>
-
-  <div class="card">
-    <h2>📊 Insights</h2>
-    <div id="insights">
-      <div>Total upcoming: <strong id="insUpcoming">0</strong></div>
-      <div>Next market: <strong id="insNext">—</strong> <span id="insNextSub" class="tagline"></span></div>
-      <div>Total fees: <strong id="insFees">$0.00 USD</strong></div>
-      <div>Total sales: <strong id="insSales">$0.00 USD</strong></div>
-    </div>
-  </div>
-</main>
-  <!-- 🧸 Plushie Creations -->
-<div class="card">
-  <h2>🧸 Plushie Creations</h2>
-
-  <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:8px; align-items:end; margin-bottom:10px">
-    <div>
-      <label class="tagline">Name</label>
-      <input id="pName" placeholder="e.g., Jumbo Octo">
-    </div>
-    <div>
-      <label class="tagline">Size</label>
-      <input id="pSize" placeholder="e.g., Medium">
-    </div>
-    <div>
-      <label class="tagline">Status</label>
-      <select id="pStatus">
-        <option>Planned</option>
-        <option>In progress</option>
-        <option>Finished</option>
-        <option>Delivered</option>
-      </select>
-    </div>
-    <div>
-      <label class="tagline">Price</label>
-      <input id="pPrice" type="number" min="0" step="0.01" placeholder="0.00">
-    </div>
-
-    <div style="grid-column:1 / -1">
-      <label class="tagline">Assign to markets (multi-select)</label>
-      <select id="pMarkets" multiple size="3" style="width:100%"></select>
-    </div>
-
-    <div style="grid-column:1 / -1; display:flex; gap:8px">
-      <input id="pNotes" placeholder="Notes (optional)" style="flex:1">
-      <button id="addPlush">Add / Save</button>
-      <button id="cancelPlush" class="ghost">Cancel</button>
-    </div>
-  </div>
-
-  <div id="plushList"></div>
-</div>
-
-<!-- 🧶 W.I.P.s -->
-<div class="card">
-  <h2>🧶 W.I.P.s</h2>
-
-  <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:8px; align-items:end; margin-bottom:10px">
-    <div>
-      <label class="tagline">Yarn</label>
-      <input id="wYarn" placeholder="e.g., Bernat Blanket">
-    </div>
-    <div>
-      <label class="tagline">Hook</label>
-      <input id="wHook" placeholder="e.g., 4.5 mm">
-    </div>
-    <div>
-      <label class="tagline">Pattern link</label>
-      <input id="wLink" placeholder="https://…">
-    </div>
-    <div>
-      <label class="tagline">Time</label>
-      <input id="wTime" placeholder="hh:mm">
-    </div>
-
-    <div style="grid-column:1 / -1">
-      <label class="tagline">Assign to markets (multi-select)</label>
-      <select id="wMarkets" multiple size="3" style="width:100%"></select>
-    </div>
-
-    <div style="grid-column:1 / -1; display:flex; gap:8px">
-      <input id="wNotes" placeholder="Notes (optional)" style="flex:1">
-      <button id="addWip">Add / Save</button>
-      <button id="cancelWip" class="ghost">Cancel</button>
-    </div>
-  </div>
-<!-- 🧾 Customer Orders -->
-<div class="card">
-  <h2>🧾 Customer Orders</h2>
-
-  <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; align-items:end; margin-bottom:10px">
-    <div>
-      <label class="tagline">Customer name</label>
-      <input id="oName" placeholder="e.g., Jamie">
-    </div>
-    <div>
-      <label class="tagline">Item</label>
-      <input id="oItem" placeholder="e.g., Jumbo Octo">
-    </div>
-    <div>
-      <label class="tagline">Qty</label>
-      <input id="oQty" type="number" min="1" step="1" value="1">
-    </div>
-    <div>
-      <label class="tagline">Due date</label>
-      <input id="oDue" type="date">
-    </div>
-
-    <div>
-      <label class="tagline">Status</label>
-      <select id="oStatus">
-        <option>Planned</option>
-        <option>In progress</option>
-        <option>Finished</option>
-        <option>Delivered</option>
-      </select>
-    </div>
-
-    <div>
-      <label class="tagline">Delivery</label>
-      <select id="oDeliveryType">
-        <option value="">— choose —</option>
-        <option value="market">Market</option>
-        <option value="shipping">Shipping</option>
-        <option value="pickup">Pickup</option>
-      </select>
-    </div>
-
-    <!-- Market delivery -->
-    <div id="oDeliveryMarketWrap" style="display:none">
-      <label class="tagline">Deliver at market</label>
-      <select id="oMarket"></select>
-    </div>
-
-    <!-- Shipping delivery -->
-    <div id="oDeliveryShipWrap" style="display:none; grid-column:1 / -1; display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px">
-      <div>
-        <label class="tagline">Ship to (name)</label>
-        <input id="oShipTo">
-      </div>
-      <div style="grid-column:1 / -1">
-        <label class="tagline">Address</label>
-        <input id="oShipAddr" placeholder="Street, city, postal…">
-      </div>
-      <div>
-        <label class="tagline">Shipping cost</label>
-        <input id="oShipCost" type="number" step="0.01" min="0">
-      </div>
-      <div>
-        <label class="tagline">Tracking #</label>
-        <input id="oShipTrack">
-      </div>
-      <div style="grid-column:1 / -1">
-        <label class="tagline">Shipping notes</label>
-        <input id="oShipNotes" placeholder="Optional">
-      </div>
-    </div>
-
-    <!-- Pickup delivery -->
-    <div id="oDeliveryPickWrap" style="display:none; grid-column:1 / -1; display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px">
-      <div>
-        <label class="tagline">Pickup location</label>
-        <select id="oPickLoc"></select>
-      </div>
-      <div>
-        <label class="tagline">Pickup time</label>
-        <input id="oPickWhen" type="datetime-local">
-      </div>
-      <div style="grid-column:1 / -1">
-        <label class="tagline">Pickup notes</label>
-        <input id="oPickNotes" placeholder="Optional">
-      </div>
-    </div>
-
-    <div style="grid-column:1 / -1">
-      <label class="tagline">Order notes</label>
-      <input id="oNotes" placeholder="Optional">
-    </div>
-
-    <div style="grid-column:1 / -1; display:flex; gap:8px">
-      <button id="addOrder">Add / Save</button>
-      <button id="cancelOrder" class="ghost">Cancel</button>
-    </div>
-  </div>
-
-  <div id="orderList"></div>
-</div>
-
-<!-- ⚙️ Settings (expanded) -->
-<div class="card">
-  <h2>⚙️ Settings</h2>
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; align-items:end; margin-bottom:10px">
-    <div>
-      <label class="tagline">Currency symbol</label>
-      <input id="sCurSym" placeholder="$">
-    </div>
-    <div>
-      <label class="tagline">Currency type</label>
-      <input id="sCurType" placeholder="USD, CAD…">
-    </div>
-
-    <div style="grid-column:1 / -1">
-      <label class="tagline">Plushie sizes (one per line)</label>
-      <textarea id="sSizes" rows="4" placeholder="Mini (3–5&quot;)\nSmall (6–8&quot;)\nMedium (9–12&quot;)\nLarge (13–16&quot;)\nXL / Jumbo (17–20&quot;)\nGiant (21&quot;+)" ></textarea>
-    </div>
-
-    <div style="grid-column:1 / -1">
-      <label class="tagline">Locations (one per line)</label>
-      <textarea id="sLocs" rows="3" placeholder="Parksville"></textarea>
-    </div>
-
-    <div style="grid-column:1 / -1; display:flex; gap:8px">
-      <button id="sSave">Save settings</button>
-      <button id="sApply" class="ghost">Apply (no save)</button>
-    </div>
-  </div>
-
-  <!-- Optional: size presets helper for Plushies -->
-  <div class="small muted">Tip: after saving sizes here, you’ll get a quick “Sizes” dropdown next to the Plushie Size field.</div>
-</div>
-  <div id="wipList"></div>
-</div>
-
-  <!-- Instructions popup -->
-  <dialog id="dlgInstructions">
+  <!-- Instructions (auto-open) -->
+  <dialog id="dlgInstructions" class="dialog">
     <h2>Welcome to LydiBug Styles Market Hub</h2>
-    <p>
-      I created this tool to manage my crochet business and thought other
-      makers might find it helpful too. Here’s to the hustle! 💪
-    </p>
-    <button id="btnCloseInstructions">Close</button>
+    <p>I built this for my crochet business and thought other makers might find it helpful. Here’s to the hustle! 💪</p>
+    <button id="btnCloseInstructions" class="primary">Close</button>
   </dialog>
 
-  <!-- What's New popup -->
-  <dialog id="dlgWhatsNew">
-    <h2>✨ What’s New in v2.22.7</h2>
+  <!-- What’s New -->
+  <dialog id="dlgWhatsNew" class="dialog">
+    <h2>✨ What’s New</h2>
     <ul>
-      <li>Fixed broken Instructions popup (now closable)</li>
-      <li>Rebuilt full index.html structure</li>
-      <li>“What’s New” popup works correctly</li>
+      <li>Plushies & W.I.P.s linked into Market Workspace</li>
+      <li>Customer Orders with Market / Shipping / Pickup delivery</li>
+      <li>Settings: currency, sizes (+preset), locations (+dropdown)</li>
+      <li>Workspace checklist add/edit/reset</li>
     </ul>
-    <button id="wnClose">Got it</button>
+    <button id="wnClose" class="primary">Got it</button>
   </dialog>
-<!-- Market Workspace dialog -->
-<dialog id="dlgMarket">
-  <div id="dlgMarketBody"></div>
-</dialog>
-  <script>
-    // Show Instructions on first load
-    const instr = document.getElementById('dlgInstructions');
-    instr.showModal();
-    document.getElementById('btnCloseInstructions').onclick = () => {
-      instr.close();
-      document.getElementById('hub').style.display = 'block';
-    };
 
-    // Show What's New once per version
-    if (!localStorage.getItem('whatsnew_v227')) {
-      const wn = document.getElementById('dlgWhatsNew');
-      if (wn) {
-        wn.showModal();
-        document.getElementById('wnClose').addEventListener('click', () => {
-          wn.close();
-          localStorage.setItem('whatsnew_v227', '1');
-        });
-      }
-    }
-  </script>
-  <script>
-/* ========= Markets + Workspace (v2.22.8) ========= */
-const STORAGE = {
-  markets: 'lbs_mk_markets_v8',
-  settings: 'lbs_mk_settings_v3'
-};
+  <dialog id="dlgMarket" class="dialog">
+    <div id="dlgMarketBody"></div>
+  </dialog>
 
-// Settings (for currency + locations)
-let SETTINGS = { currency: '$', currencyType: 'USD', locations: ['Parksville'] };
-try { SETTINGS = Object.assign(SETTINGS, JSON.parse(localStorage.getItem(STORAGE.settings)||'{}')); } catch {}
-
-function saveSettings(){ localStorage.setItem(STORAGE.settings, JSON.stringify(SETTINGS)); }
-function curSym(){ return SETTINGS.currency || '$'; }
-function curType(){ return SETTINGS.currencyType || 'USD'; }
-
-// Markets
-let MARKETS = [];
-try { MARKETS = JSON.parse(localStorage.getItem(STORAGE.markets) || '[]'); } catch {}
-function saveMarkets(){ localStorage.setItem(STORAGE.markets, JSON.stringify(MARKETS)); }
-
-function uid(){ return Math.random().toString(36).slice(2) + Date.now().toString(36); }
-function doc(id){ return document.getElementById(id); }
-
-function rebuildWhereDropdown(){
-  const sel = doc('mWhere');
-  if(!sel) return;
-  sel.innerHTML = '';
-  (SETTINGS.locations||[]).forEach(l => sel.add(new Option(l, l)));
-  sel.add(new Option('Other…','__OTHER__'));
-}
-
-function statusBadge(m){
-  const today = new Date().toISOString().slice(0,10);
-  const start = m.date;
-  const end = m.endDate || m.date;
-  if (!start) return '—';
-  if (today < start) {
-    const dleft = Math.ceil((new Date(start) - new Date(today))/86400000);
-    return 'D-'+dleft;
-  } else if (today >= start && today <= end) {
-    return 'ON';
-  }
-  return 'PAST';
-}
-
-function getMarketName(id){
-  const m = MARKETS.find(x => x.id === id);
-  return m ? m.name : '';
-}
-
-function renderMarkets(){
-  const list = doc('marketList'); if(!list) return;
-  list.innerHTML = '';
-  const arr = (MARKETS||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-
-  arr.forEach(m=>{
-    const row = document.createElement('div');
-    row.style.cssText = 'display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;border:1px solid #ddd;border-radius:8px;padding:10px;margin-bottom:8px;background:#fff';
-
-    const feeTxt = m.fee ? ` • ${curSym()}${Number(m.fee).toFixed(2)} ${curType()}` : '';
-    const dates = (m.date? (' • '+m.date) : '') + (m.endDate ? (' → '+m.endDate) : '');
-    const left = document.createElement('div');
-    left.innerHTML = `<strong>${m.name||'Untitled'}</strong>${dates}${m.where?(' • '+m.where):''}${feeTxt}`;
-
-    const badge = document.createElement('div');
-    badge.className = 'tagline';
-    badge.textContent = statusBadge(m);
-
-    const open = document.createElement('button');
-    open.textContent = 'Open';
-    open.onclick = ()=> openWorkspace(m.id);
-
-    const del = document.createElement('button');
-    del.textContent = 'Delete';
-    del.style.background = '#fff';
-    del.onclick = ()=>{
-      if(confirm('Delete this market?')){
-        MARKETS = MARKETS.filter(x=>x.id!==m.id);
-        saveMarkets(); renderAll();
-      }
-    };
-
-    row.appendChild(left);
-    row.appendChild(badge);
-    row.appendChild(open);
-    row.appendChild(del);
-    list.appendChild(row);
-  });
-
-  // Insights helpers and directory
-  renderInsights();
-  renderMarketDirectory();
-}
-
-function renderMarketDirectory(){
-  const host = doc('mDir'); if(!host) return; host.innerHTML='';
-  const q = (doc('mSearch').value || '').toLowerCase();
-  (MARKETS||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')).filter(m=>{
-    const hay = [m.name, m.date, (m.endDate||''), m.where].join(' ').toLowerCase();
-    return !q || hay.includes(q);
-  }).forEach(m=>{
-    const row = document.createElement('div');
-    row.style.cssText='display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border:1px solid #ddd;border-radius:8px;padding:10px;margin-bottom:8px;background:#fff';
-    const left = document.createElement('div');
-    left.innerHTML = `<strong>${m.name||'Untitled'}</strong>${m.date?(' • '+m.date):''}${m.endDate?(' → '+m.endDate):''}${m.where?(' • '+m.where):''}`;
-    const open = document.createElement('button'); open.textContent='Open'; open.onclick=()=>openWorkspace(m.id);
-    row.appendChild(left); row.appendChild(open);
-    host.appendChild(row);
-  });
-}
-
-function renderInsights(){
-  const t = new Date().toISOString().slice(0,10);
-  const upcoming = (MARKETS||[]).filter(m=> (m.endDate||m.date||'') >= t );
-  const nextStart = (MARKETS||[]).filter(m=> m.date && m.date >= t).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-  const fees = (MARKETS||[]).reduce((s,m)=> s + (parseFloat(m.fee)||0), 0);
-  const sales = (MARKETS||[]).reduce((s,m)=> s + (parseFloat(m.sales)||0), 0);
-
-  if(doc('insUpcoming')) doc('insUpcoming').textContent = String(upcoming.length);
-  if(doc('insNext')) doc('insNext').textContent = nextStart.length ? (nextStart[0].name||'Untitled') : '—';
-  if(doc('insNextSub')) doc('insNextSub').textContent = nextStart.length ? ((nextStart[0].date||'') + (nextStart[0].where?(' • '+nextStart[0].where):'')) : 'No upcoming markets';
-  if(doc('insFees')) doc('insFees').textContent = `${curSym()}${fees.toFixed(2)} ${curType()}`;
-  if(doc('insSales')) doc('insSales').textContent = `${curSym()}${sales.toFixed(2)} ${curType()}`;
-}
-
-// Add market
-(function bindMarketForm(){
-  const addBtn = doc('addMarket');
-  if(!addBtn) return;
-
-  // Build locations dropdown
-  rebuildWhereDropdown();
-
-  addBtn.addEventListener('click', ()=>{
-    let where = (doc('mWhere').value || '');
-    if (where === '__OTHER__') {
-      const v = prompt('New location?','');
-      if (v) {
-        where = v.trim();
-        if (where && !SETTINGS.locations.includes(where)) {
-          SETTINGS.locations.push(where);
-          saveSettings();
-        }
-      } else {
-        where = '';
-      }
-    }
-
-    const m = {
-      id: uid(),
-      name: (doc('mName').value||'').trim(),
-      date: doc('mDate').value || '',
-      endDate: doc('mEnd').value || '',
-      where,
-      fee: parseFloat(doc('mFee').value||0) || 0,
-      sales: 0,
-      notes: (doc('mNotes').value||'').trim(),
-      checklist: [] // filled from master later if needed
-    };
-    if (!m.name) { alert('Market needs a name'); return; }
-
-    MARKETS.push(m);
-    ['mName','mDate','mEnd','mFee','mNotes'].forEach(id=>{ const el=doc(id); if(el) el.value=''; });
-    if (doc('mWhere')) doc('mWhere').value='';
-
-    saveMarkets();
-    renderMarkets();
-  });
-
-  // Search
-  const s = doc('mSearch');
-  if (s) s.addEventListener('input', renderMarketDirectory);
-})();
-
-/* ===== Workspace popup ===== */
-const MASTER = ["Float & Square reader","Cash box","Business cards","Bags","Tablecloth","Display risers","Signage","Scissors/Tape","Sanitizer","Water & snacks"];
-
-function ensureChecklist(m){
-  if (!Array.isArray(m.checklist) || !m.checklist.length) {
-    m.checklist = MASTER.map(t=>({text:t, done:false}));
-  }
-}
-
-function openWorkspace(id){
-  const m = MARKETS.find(x=>x.id===id); if(!m) return;
-  ensureChecklist(m);
-  const fees = (parseFloat(m.fee)||0);
-  const sales = (parseFloat(m.sales)||0);
-
-  const html = `
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px">
-    <div>
-      <h3>🧺 Workspace — ${m.name||'Untitled'}</h3>
-      <div class="tagline">${(m.date||'')}${m.endDate?(' → '+m.endDate):''}${m.where?(' • '+m.where):''}</div>
-    </div>
-    <div><button id="wsClose">Close</button></div>
-  </div>
-
-  <div style="display:flex;gap:12px;flex-wrap:wrap">
-    <div style="flex:1 1 280px" class="card">
-      <h3>Checklist</h3>
-      <div id="wsChecks"></div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <input id="wsNew" type="text" placeholder="Add item…" style="flex:1">
-        <button id="wsAdd">Add</button>
-      </div>
-      <button id="wsReset" style="background:#fff">Reset from master</button>
-    </div>
-
-    <div style="flex:1 1 280px" class="card">
-      <h3>Linked Plushies</h3>
-      <div id="wsPlush"><div class="tagline">Coming when we add Plushies</div></div>
-      <h3 style="margin-top:12px">Linked W.I.P.s</h3>
-      <div id="wsWips"><div class="tagline">Coming when we add W.I.P.s</div></div>
-    </div>
-
-    <div style="flex:1 1 280px" class="card">
-      <h3>Orders for this market</h3>
-      <div id="wsOrders"><div class="tagline">Coming when we add Orders</div></div>
-      <div style="height:1px;background:#ddd;margin:10px 0"></div>
-      <div><strong>Summary</strong><div class="tagline">Fees vs. Sales</div></div>
-      <div style="display:flex;justify-content:space-between"><div>Table Fee</div><div id="wsFeeTag" class="tagline"></div></div>
-      <div style="display:flex;justify-content:space-between"><div>Sales</div><div id="wsSalesTag" class="tagline"></div></div>
-    </div>
-  </div>`;
-
-  doc('dlgMarketBody').innerHTML = html;
-
-  // summary tags
-  doc('wsFeeTag').textContent   = `${curSym()}${fees.toFixed(2)} ${curType()}`;
-  doc('wsSalesTag').textContent = `${curSym()}${sales.toFixed(2)} ${curType()}`;
-
-  // persist
-  function persist(){
-    const idx = MARKETS.findIndex(x=>x.id===m.id);
-    if (idx >= 0) { MARKETS[idx] = m; saveMarkets(); }
-  }
-
-  // checklist render
-  const wsChecks = doc('wsChecks');
-  function drawChecks(){
-    wsChecks.innerHTML = '';
-    (m.checklist||[]).forEach((c,idx)=>{
-      const row = document.createElement('div');
-      row.style.cssText='display:flex;gap:8px;align-items:center;margin-bottom:6px';
-
-      const cb = document.createElement('input'); cb.type='checkbox'; cb.checked=!!c.done;
-      cb.onchange = ()=>{ c.done = cb.checked; persist(); };
-
-      const tx = document.createElement('input'); tx.type='text'; tx.value = c.text || '';
-      tx.onchange = ()=>{ c.text = tx.value; persist(); };
-
-      const rm = document.createElement('button'); rm.textContent='🗑'; rm.style.background='#fff';
-      rm.onclick = ()=>{ m.checklist.splice(idx,1); persist(); drawChecks(); };
-
-      row.appendChild(cb); row.appendChild(tx); row.appendChild(rm);
-      wsChecks.appendChild(row);
-    });
-  }
-  drawChecks();
-
-  // add/reset
-  const addBtn = doc('wsAdd'); if(addBtn) addBtn.onclick = ()=>{
-    const t = (doc('wsNew').value||'').trim(); if(!t) return;
-    (m.checklist||(m.checklist=[])).push({text:t, done:false});
-    doc('wsNew').value = '';
-    persist(); drawChecks();
-  };
-  const resetBtn = doc('wsReset'); if(resetBtn) resetBtn.onclick = ()=>{
-    if(!confirm('Reset checklist from master?')) return;
-    m.checklist = MASTER.map(t=>({text:t,done:false}));
-    persist(); drawChecks();
-  };
-
-  // close
-  const close = doc('wsClose'); if(close) close.onclick = ()=> doc('dlgMarket').close();
-
-  // show
-  doc('dlgMarket').showModal();
-}
-
-// Initial render once Instructions are closed (hub is visible)
-(function boot(){
-  // Rebuild locations dropdown
-  rebuildWhereDropdown();
-  renderMarkets();
-
-  // Wire search if present
-  const s = doc('mSearch'); if (s) s.addEventListener('input', renderMarketDirectory);
-})();
-</script>
-  <script>
-/* ========= Plushies + WIPs (v2.22.9) ========= */
-const STORE = {
-  plush: 'lbs_plush_v1',
-  wips:  'lbs_wips_v1'
-};
-
-let PLUSH = [];
-let WIPS  = [];
-try { PLUSH = JSON.parse(localStorage.getItem(STORE.plush) || '[]'); } catch {}
-try { WIPS  = JSON.parse(localStorage.getItem(STORE.wips)  || '[]'); } catch {}
-function savePlush(){ localStorage.setItem(STORE.plush, JSON.stringify(PLUSH)); }
-function saveWips(){  localStorage.setItem(STORE.wips,  JSON.stringify(WIPS));  }
-
-function getMulti(sel){ return Array.from(sel.selectedOptions).map(o=>o.value); }
-function setMulti(sel,vals){ Array.from(sel.options).forEach(o=>o.selected=(vals||[]).includes(o.value)); }
-function fmtMarketsTag(ids){ if(!ids||!ids.length) return ''; return ids.map(id=>`<span class="tag">${getMarketName(id)||'?'}</span>`).join(' '); }
-
-function populateMarketMulti(selectEl){
-  if(!selectEl) return;
-  selectEl.innerHTML='';
-  (MARKETS||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'')).forEach(m=>{
-    const opt=document.createElement('option'); opt.value=m.id; opt.textContent=`${m.name}${m.date?(' • '+m.date):''}`;
-    selectEl.appendChild(opt);
-  });
-}
-
-/* ------ Plushies ------ */
-let editingPlush = -1;
-function renderPlushies(){
-  const host = document.getElementById('plushList'); if(!host) return;
-  host.innerHTML='';
-
-  // table
-  const table = document.createElement('table');
-  table.style.width='100%'; table.style.borderCollapse='collapse';
-  table.innerHTML = `
-    <thead><tr>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Name</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Size</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Status</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Price</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Markets</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Notes</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px"></th>
-    </tr></thead>
-    <tbody></tbody>`;
-  const tbody = table.querySelector('tbody');
-
-  PLUSH.forEach((p,i)=>{
-    const tr=document.createElement('tr');
-    function td(html){ const x=document.createElement('td'); x.style.padding='6px'; x.style.borderBottom='1px solid #eee'; if(html) x.innerHTML=html; return x; }
-
-    tr.appendChild(td(p.name||'')).textContent = p.name||'';
-    tr.appendChild(td()).textContent = p.size||'';
-    tr.appendChild(td()).textContent = p.status||'Planned';
-    tr.appendChild(td(`${curSym()}${Number(p.price||0).toFixed(2)} ${curType()}`));
-    tr.appendChild(td(fmtMarketsTag(p.markets||[]), true));
-    tr.appendChild(td()).textContent = p.notes||'';
-
-    const actions=td();
-    const e=document.createElement('button'); e.className='soft'; e.textContent='✏️ Edit';
-    e.onclick=()=>{
-      editingPlush=i;
-      document.getElementById('pName').value   = p.name||'';
-      document.getElementById('pSize').value   = p.size||'';
-      document.getElementById('pStatus').value = p.status||'Planned';
-      document.getElementById('pPrice').value  = (p.price??'');
-      document.getElementById('pNotes').value  = p.notes||'';
-      setMulti(document.getElementById('pMarkets'), p.markets||[]);
-    };
-    const d=document.createElement('button'); d.className='ghost'; d.textContent='🗑 Delete';
-    d.onclick=()=>{ PLUSH.splice(i,1); savePlush(); renderPlushies(); };
-
-    actions.appendChild(e); actions.appendChild(document.createTextNode(' ')); actions.appendChild(d);
-    tr.appendChild(actions);
-    tbody.appendChild(tr);
-  });
-
-  host.appendChild(table);
-}
-
-document.getElementById('addPlush').addEventListener('click', ()=>{
-  const row = {
-    name:  (document.getElementById('pName').value||'').trim(),
-    size:  (document.getElementById('pSize').value||'').trim(),
-    status:document.getElementById('pStatus').value||'Planned',
-    price: parseFloat(document.getElementById('pPrice').value||0)||0,
-    markets:getMulti(document.getElementById('pMarkets')),
-    notes: (document.getElementById('pNotes').value||'').trim(),
-    added: new Date().toISOString().slice(0,10)
-  };
-  if(!row.name){ alert('Plushie name required'); return; }
-  if(row.status==='Finished' && !row.finished) row.finished=new Date().toISOString().slice(0,10);
-
-  if(editingPlush>=0){
-    // keep first added date
-    row.added = PLUSH[editingPlush].added || row.added;
-    row.finished = (row.status==='Finished') ? (PLUSH[editingPlush].finished || new Date().toISOString().slice(0,10)) : (PLUSH[editingPlush].finished || '');
-    PLUSH[editingPlush]=row;
-    editingPlush=-1;
-  } else {
-    PLUSH.push(row);
-  }
-
-  ['pName','pPrice','pNotes'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('pSize').value='';
-  document.getElementById('pStatus').value='Planned';
-  setMulti(document.getElementById('pMarkets'), []);
-  savePlush(); renderPlushies();
-});
-
-document.getElementById('cancelPlush').addEventListener('click', ()=>{
-  editingPlush=-1;
-  ['pName','pPrice','pNotes'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('pSize').value='';
-  document.getElementById('pStatus').value='Planned';
-  setMulti(document.getElementById('pMarkets'), []);
-});
-
-/* ------ WIPs ------ */
-let editingWip = -1;
-function renderWips(){
-  const host = document.getElementById('wipList'); if(!host) return;
-  host.innerHTML='';
-
-  const table = document.createElement('table');
-  table.style.width='100%'; table.style.borderCollapse='collapse';
-  table.innerHTML = `
-    <thead><tr>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Yarn</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Hook</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Markets</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Pattern</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Time</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Notes</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px"></th>
-    </tr></thead>
-    <tbody></tbody>`;
-  const tbody = table.querySelector('tbody');
-
-  WIPS.forEach((w,i)=>{
-    const tr=document.createElement('tr');
-    function td(html){ const x=document.createElement('td'); x.style.padding='6px'; x.style.borderBottom='1px solid #eee'; if(html) x.innerHTML=html; return x; }
-
-    tr.appendChild(td()).textContent = w.yarn||'';
-    tr.appendChild(td()).textContent = w.hook||'';
-    tr.appendChild(td(fmtMarketsTag(w.markets||[]), true));
-    tr.appendChild(td( w.link ? `<a target="_blank" href="${w.link}">link</a>` : '' , true));
-    tr.appendChild(td()).textContent = w.time||'';
-    tr.appendChild(td()).textContent = w.notes||'';
-
-    const actions=td();
-    const e=document.createElement('button'); e.className='soft'; e.textContent='✏️ Edit';
-    e.onclick=()=>{
-      editingWip=i;
-      document.getElementById('wYarn').value = w.yarn||'';
-      document.getElementById('wHook').value = w.hook||'';
-      document.getElementById('wLink').value = w.link||'';
-      document.getElementById('wTime').value = w.time||'';
-      document.getElementById('wNotes').value = w.notes||'';
-      setMulti(document.getElementById('wMarkets'), w.markets||[]);
-    };
-    const d=document.createElement('button'); d.className='ghost'; d.textContent='🗑 Delete';
-    d.onclick=()=>{ WIPS.splice(i,1); saveWips(); renderWips(); };
-
-    actions.appendChild(e); actions.appendChild(document.createTextNode(' ')); actions.appendChild(d);
-    tr.appendChild(actions);
-    tbody.appendChild(tr);
-  });
-
-  host.appendChild(table);
-}
-
-document.getElementById('addWip').addEventListener('click', ()=>{
-  const row = {
-    yarn:  (document.getElementById('wYarn').value||'').trim(),
-    hook:  (document.getElementById('wHook').value||'').trim(),
-    link:  (document.getElementById('wLink').value||'').trim(),
-    time:  (document.getElementById('wTime').value||'').trim(),
-    notes: (document.getElementById('wNotes').value||'').trim(),
-    markets:getMulti(document.getElementById('wMarkets'))
-  };
-  if(!row.yarn){ alert('WIP requires yarn'); return; }
-
-  if(editingWip>=0){ WIPS[editingWip]=row; editingWip=-1; }
-  else { WIPS.push(row); }
-
-  ['wYarn','wHook','wLink','wTime','wNotes'].forEach(id=>document.getElementById(id).value='');
-  setMulti(document.getElementById('wMarkets'), []);
-  saveWips(); renderWips();
-});
-
-document.getElementById('cancelWip').addEventListener('click', ()=>{
-  editingWip=-1;
-  ['wYarn','wHook','wLink','wTime','wNotes'].forEach(id=>document.getElementById(id).value='');
-  setMulti(document.getElementById('wMarkets'), []);
-});
-
-/* ------ Integration points ------ */
-// When markets change, rebuild multi-selects:
-const _oldRenderMarkets = renderMarkets;
-renderMarkets = function(){
-  _oldRenderMarkets();
-  populateMarketMulti(document.getElementById('pMarkets'));
-  populateMarketMulti(document.getElementById('wMarkets'));
-};
-
-// Show linked Plushies/WIPs inside Workspace popup:
-const _oldOpenWorkspace = openWorkspace;
-openWorkspace = function(id){
-  _oldOpenWorkspace(id);
-  const m = MARKETS.find(x=>x.id===id); if(!m) return;
-
-  // Plushies
-  const pHost = document.getElementById('wsPlush');
-  if(pHost){
-    const items = (PLUSH||[]).filter(p=> (p.markets||[]).includes(m.id));
-    if(!items.length){ pHost.innerHTML = '<div class="small muted">None linked</div>'; }
-    else {
-      pHost.innerHTML='';
-      items.forEach(p=>{
-        const row=document.createElement('div'); row.className='item'; row.style.gridTemplateColumns='1fr auto';
-        row.innerHTML = `<div>${p.name||'?'} • ${p.status||'Planned'} ${p.price!=null?(' • '+curSym()+Number(p.price||0).toFixed(2)+' '+curType()):''}</div>`;
-        pHost.appendChild(row);
-      });
-    }
-  }
-
-  // WIPs
-  const wHost = document.getElementById('wsWips');
-  if(wHost){
-    const items = (WIPS||[]).filter(w=> (w.markets||[]).includes(m.id));
-    if(!items.length){ wHost.innerHTML = '<div class="small muted">None linked</div>'; }
-    else {
-      wHost.innerHTML='';
-      items.forEach(w=>{
-        const row=document.createElement('div'); row.className='item'; row.style.gridTemplateColumns='1fr auto';
-        const link = w.link ? ` • <a target="_blank" href="${w.link}">pattern</a>` : '';
-        row.innerHTML = `<div>${w.yarn||'?'} • ${w.hook||''}${link}</div>`;
-        wHost.appendChild(row);
-      });
-    }
-  }
-};
-
-// Initial draw for new sections
-populateMarketMulti(document.getElementById('pMarkets'));
-populateMarketMulti(document.getElementById('wMarkets'));
-renderPlushies();
-renderWips();
-</script>
-  <script>
-/* ========= Orders + Settings Expansion (v2.23.0) ========= */
-const STORE2 = { orders: 'lbs_orders_v1' };
-let ORDERS = [];
-try { ORDERS = JSON.parse(localStorage.getItem(STORE2.orders) || '[]'); } catch {}
-function saveOrders(){ localStorage.setItem(STORE2.orders, JSON.stringify(ORDERS)); }
-
-/* ---- Settings expand (currency, sizes, locations) ---- */
-// SETTINGS already exists in your Markets script. We extend UI to edit it.
-function applySettingsUI(){
-  const s = SETTINGS || {};
-  const $ = id => document.getElementById(id);
-  if($('sCurSym')) $('sCurSym').value = s.currency || '$';
-  if($('sCurType')) $('sCurType').value = s.currencyType || 'USD';
-  if($('sSizes'))   $('sSizes').value = (s.sizes && s.sizes.length) ? s.sizes.join('\n') : 
-    'Mini (3–5")\nSmall (6–8")\nMedium (9–12")\nLarge (13–16")\nXL / Jumbo (17–20")\nGiant (21”+)';
-  if($('sLocs'))    $('sLocs').value  = (s.locations||['Parksville']).join('\n');
-}
-function readSettingsFromUI(persist){
-  const $ = id => document.getElementById(id);
-  const toLines = (t)=> (t||'').split(/\n+/).map(x=>x.trim()).filter(Boolean);
-  SETTINGS.currency     = ($('sCurSym')?.value || '$').trim() || '$';
-  SETTINGS.currencyType = ($('sCurType')?.value || 'USD').trim() || 'USD';
-  SETTINGS.sizes        = toLines($('sSizes')?.value);
-  SETTINGS.locations    = toLines($('sLocs')?.value);
-  if(persist) saveSettings();
-  // refresh spots that depend on settings:
-  rebuildWhereDropdown();               // markets location dropdown
-  buildPlushSizePresetHelper();         // plush size helper
-}
-
-document.getElementById('sSave').addEventListener('click', ()=>{
-  readSettingsFromUI(true);
-  alert('Settings saved');
-});
-document.getElementById('sApply').addEventListener('click', ()=>{
-  readSettingsFromUI(false);
-  alert('Settings applied (not saved)');
-});
-applySettingsUI();
-
-/* ---- Plushie Size preset helper ---- */
-function buildPlushSizePresetHelper(){
-  // add a small preset dropdown + "Use" button next to pSize input
-  const sizeInput = document.getElementById('pSize');
-  if(!sizeInput) return;
-  // avoid duplicates
-  if(document.getElementById('pSizePreset')) return;
-
-  const wrap = sizeInput.parentElement;
-  const sel  = document.createElement('select');
-  sel.id = 'pSizePreset';
-  sel.style.marginTop = '6px';
-  sel.style.width = '100%';
-  (SETTINGS.sizes||[]).forEach(sz=>{
-    const o = document.createElement('option'); o.value=sz; o.textContent=sz; sel.appendChild(o);
-  });
-  const useBtn = document.createElement('button');
-  useBtn.textContent = 'Use selected size';
-  useBtn.className = 'ghost';
-  useBtn.style.marginTop = '6px';
-  useBtn.onclick = ()=>{ if(sel.value) sizeInput.value = sel.value; };
-
-  wrap.appendChild(sel);
-  wrap.appendChild(useBtn);
-}
-buildPlushSizePresetHelper();
-
-/* ---- Orders UI helpers ---- */
-function populateMarketSelect(sel, includeBlank){
-  if(!sel) return;
-  sel.innerHTML = '';
-  if(includeBlank) sel.add(new Option('—',''));
-  (MARKETS||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'')).forEach(m=>{
-    sel.add(new Option(m.name + (m.date?(' • '+m.date):''), m.id));
-  });
-}
-function populatePickupLocations(sel){
-  if(!sel) return;
-  sel.innerHTML = '';
-  (SETTINGS.locations||[]).forEach(l=> sel.add(new Option(l,l)));
-}
-function updateDeliveryUI(){
-  const v = (document.getElementById('oDeliveryType')?.value)||'';
-  document.getElementById('oDeliveryMarketWrap').style.display = (v==='market')?'':'none';
-  document.getElementById('oDeliveryShipWrap').style.display   = (v==='shipping')?'':'none';
-  document.getElementById('oDeliveryPickWrap').style.display   = (v==='pickup')?'':'none';
-}
-document.getElementById('oDeliveryType').addEventListener('change', updateDeliveryUI);
-
-/* ---- Render Orders ---- */
-function renderOrders(){
-  const host = document.getElementById('orderList'); if(!host) return;
-  host.innerHTML = '';
-
-  // table
-  const table = document.createElement('table');
-  table.style.width='100%'; table.style.borderCollapse='collapse';
-  table.innerHTML = `
-    <thead><tr>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Customer</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Item</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Qty</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Due</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Status</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Delivery</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px">Notes</th>
-      <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px"></th>
-    </tr></thead>
-    <tbody></tbody>`;
-  const tbody = table.querySelector('tbody');
-
-  ORDERS.forEach((o,i)=>{
-    const tr = document.createElement('tr');
-    function td(html){ const x=document.createElement('td'); x.style.padding='6px'; x.style.borderBottom='1px solid #eee'; if(html!==undefined){ x.innerHTML=html; } return x; }
-
-    tr.appendChild(td(o.name||'')); tr.appendChild(td(o.item||'')); tr.appendChild(td(String(o.qty||1)));
-    tr.appendChild(td(o.due||'')); tr.appendChild(td(o.status||''));
-
-    let dLabel = '—';
-    if(o.deliveryType==='market') dLabel = 'Market: '+(getMarketName(o.market||'')||'—');
-    if(o.deliveryType==='shipping'){
-      const cost = isNaN(o.ship?.cost) ? 0 : Number(o.ship.cost);
-      dLabel = 'Shipping' + (cost>0 ? (' ('+curSym()+cost.toFixed(2)+' '+curType()+')') : '');
-    }
-    if(o.deliveryType==='pickup'){ dLabel = 'Pickup'+(o.pickup?.loc?(' ('+o.pickup.loc+')'):''); }
-    tr.appendChild(td(dLabel));
-
-    tr.appendChild(td(o.notes||''));
-
-    const act = td();
-    const e = document.createElement('button'); e.className='soft'; e.textContent='✏️ Edit';
-    e.onclick=()=>{
-      editingOrder=i;
-      vset('oName',o.name); vset('oItem',o.item); vset('oQty',o.qty||1); vset('oDue',o.due); vset('oStatus',o.status||'Planned'); vset('oNotes',o.notes);
-      vset('oDeliveryType',o.deliveryType||''); updateDeliveryUI();
-      populateMarketSelect(document.getElementById('oMarket'), true);
-      populatePickupLocations(document.getElementById('oPickLoc'));
-      vset('oMarket',o.market||'');
-      vset('oShipTo',o.ship?.to); vset('oShipAddr',o.ship?.addr); vset('oShipCost',o.ship?.cost??''); vset('oShipTrack',o.ship?.track); vset('oShipNotes',o.ship?.notes);
-      vset('oPickLoc',o.pickup?.loc||''); vset('oPickWhen',o.pickup?.when||''); vset('oPickNotes',o.pickup?.notes||'');
-    };
-    const d = document.createElement('button'); d.className='ghost'; d.textContent='🗑 Delete';
-    d.onclick=()=>{ ORDERS.splice(i,1); saveOrders(); renderOrders(); };
-
-    act.appendChild(e); act.appendChild(document.createTextNode(' ')); act.appendChild(d);
-    tr.appendChild(act);
-    tbody.appendChild(tr);
-  });
-
-  host.appendChild(table);
-}
-
-/* ---- Add / Save order ---- */
-let editingOrder = -1;
-document.getElementById('addOrder').addEventListener('click', ()=>{
-  const row = {
-    name:  g('oName'), item: g('oItem'), qty: Number(g('oQty')||1),
-    due:   g('oDue'),  status: g('oStatus'), notes: g('oNotes'),
-    deliveryType: g('oDeliveryType')||'',
-    market: g('oMarket')||'',
-    ship:   { to:g('oShipTo'), addr:g('oShipAddr'), cost:parseFloat(g('oShipCost')||0), track:g('oShipTrack'), notes:g('oShipNotes') },
-    pickup: { loc:g('oPickLoc')||'', when:g('oPickWhen')||'', notes:g('oPickNotes') }
-  };
-  if(!row.name || !row.item) return alert('Need customer name and item');
-
-  if(editingOrder>=0){ ORDERS[editingOrder]=row; editingOrder=-1; }
-  else { ORDERS.push(row); }
-
-  // clear
-  ['oName','oItem','oQty','oDue','oNotes','oShipTo','oShipAddr','oShipCost','oShipTrack','oShipNotes','oPickWhen','oPickNotes'].forEach(id=>vset(id,''));
-  vset('oStatus','Planned'); vset('oDeliveryType',''); updateDeliveryUI(); vset('oMarket',''); vset('oPickLoc','');
-
-  saveOrders(); renderOrders();
-});
-document.getElementById('cancelOrder').addEventListener('click', ()=>{
-  editingOrder=-1;
-  ['oName','oItem','oQty','oDue','oNotes','oShipTo','oShipAddr','oShipCost','oShipTrack','oShipNotes','oPickWhen','oPickNotes'].forEach(id=>vset(id,''));
-  vset('oStatus','Planned'); vset('oDeliveryType',''); updateDeliveryUI(); vset('oMarket',''); vset('oPickLoc','');
-});
-
-/* ---- Initial hydrate for Orders + Settings ---- */
-populateMarketSelect(document.getElementById('oMarket'), true);
-populatePickupLocations(document.getElementById('oPickLoc'));
-updateDeliveryUI();
-renderOrders();
-
-/* ---- Integrate orders into Workspace popup ---- */
-const _openWS = openWorkspace;
-openWorkspace = function(id){
-  _openWS(id);
-  const m = MARKETS.find(x=>x.id===id); if(!m) return;
-
-  const host = document.getElementById('wsOrders');
-  if(!host) return;
-  const items = (ORDERS||[]).filter(o => o.deliveryType==='market' && o.market===m.id);
-  if(!items.length){ host.innerHTML = '<div class="small muted">No orders for this market yet</div>'; return; }
-  host.innerHTML = '';
-  items.forEach(o=>{
-    const row = document.createElement('div'); row.className='item'; row.style.gridTemplateColumns='1fr auto';
-    row.innerHTML = `<div><strong>${o.name||''}</strong> • ${o.item||''} • ${o.status||''}</div>`;
-    host.appendChild(row);
-  });
-};
-
-/* ---- Rebuild market/location-dependent dropdowns whenever markets change ---- */
-const _renderMk = renderMarkets;
-renderMarkets = function(){
-  _renderMk();
-  populateMarketSelect(document.getElementById('oMarket'), true);
-  populatePickupLocations(document.getElementById('oPickLoc'));
-};
-</script>
+  <script src="app.js"></script>
 </body>
 </html>
