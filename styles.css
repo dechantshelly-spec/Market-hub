@@ -1,3 +1,31 @@
+:root{--bg:#f7fbfb;--card:#ffffff;--ink:#1e2329;--muted:#6b7683;--pri:#19b4ad;--acc:#e86a61;--bd:#e6ecec}
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Arial}
+.appbar{display:flex;gap:12px;align-items:center;padding:10px 14px;background:#fff;border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:10}
+.brand{width:40px;height:40px;border-radius:8px}
+h1{margin:0;font-size:18px} .tagline{color:var(--muted);font-size:14px}
+main{padding:16px;max-width:1100px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px 14px 12px;margin:14px 0;box-shadow:0 6px 24px rgba(0,0,0,.04)}
+h2{margin:0 0 10px 0;font-size:20px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;background:#fff}
+input::placeholder{color:#9aa4ae}
+.row{display:flex;gap:8px;align-items:center}
+.grow{flex:1}
+.grid{display:grid;gap:10px}
+.g2{grid-template-columns:1fr 1fr}
+.g4{grid-template-columns:repeat(4,1fr)}
+.span{grid-column:1 / -1}
+.mb10{margin-bottom:10px}
+.facts{list-style:none;padding:0;margin:6px 0} .facts li{margin:4px 0}
+button{border:1px solid var(--bd);background:linear-gradient(135deg,var(--pri),var(--acc));color:#fff;border-radius:999px;padding:8px 14px;cursor:pointer}
+button.ghost{background:#fff;color:var(--ink)}
+button.soft{background:#f3f7f7;color:var(--ink)}
+button.primary{box-shadow:0 8px 20px rgba(25,180,173,.25)}
+.tag{display:inline-block;background:#eef6f6;border:1px solid var(--bd);color:#0d6b68;padding:2px 8px;border-radius:999px;margin:2px 2px 0 0;font-size:12px}
+.hint{color:var(--muted);font-size:12px}
+table{width:100%;border-collapse:collapse} th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}
+dialog.dialog{border:1px solid var(--bd);border-radius:14px;padding:16px;max-width:760px;width:clamp(320px,90vw,760px)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
 .hdr-actions{margin-left:auto; position:relative}
 .dropdown{position:absolute; right:0; top:42px; background:#fff; border:1px solid var(--bd); border-radius:10px; box-shadow:0 10px 24px rgba(0,0,0,.08); padding:8px; min-width:220px; z-index:20}
 .dropdown button{display:block; width:100%; text-align:left; margin:4px 0; background:#f7fbfb; color:var(--ink)}
