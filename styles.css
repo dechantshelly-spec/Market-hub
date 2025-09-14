@@ -30,3 +30,15 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
 .dropdown{position:absolute; right:0; top:42px; background:#fff; border:1px solid var(--bd); border-radius:10px; box-shadow:0 10px 24px rgba(0,0,0,.08); padding:8px; min-width:220px; z-index:20}
 .dropdown button{display:block; width:100%; text-align:left; margin:4px 0; background:#f7fbfb; color:var(--ink)}
 .dropdown hr{border:none; border-top:1px solid var(--bd); margin:6px 0}
+/* --- Responsive two-column layout for wider screens --- */
+@media (min-width: 900px){
+  main{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  /* remove the vertical margins when grid is active */
+  .card{ margin: 0; }
+  /* Any card with .wide will span both columns */
+  .card.wide{ grid-column: 1 / -1; }
+}
