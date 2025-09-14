@@ -194,27 +194,30 @@
     </section>
 
     <!-- Settings -->
-    <section class="card" id="cardSettings">
-      <h2>⚙️ Settings</h2>
-      <div class="grid g2">
-        <div><label class="hint">Currency symbol</label><input id="sCurSym" placeholder="$"></div>
-        <div><label class="hint">Currency type</label><input id="sCurType" placeholder="USD, CAD…"></div>
-        <div class="span"><label class="hint">Plushie sizes (one per line)</label>
-          <textarea id="sSizes" rows="4">Mini (3–5")
+    <!-- ⚙️ Settings (dialog) -->
+<dialog id="dlgSettings" class="dialog">
+  <h2>⚙️ Settings</h2>
+  <div class="grid g2">
+    <div><label class="hint">Currency symbol</label><input id="sCurSym" placeholder="$"></div>
+    <div><label class="hint">Currency type</label><input id="sCurType" placeholder="USD, CAD…"></div>
+    <div class="span"><label class="hint">Plushie sizes (one per line)</label>
+      <textarea id="sSizes" rows="4">Mini (3–5")
 Small (6–8")
 Medium (9–12")
 Large (13–16")
 XL / Jumbo (17–20")
 Giant (21”+)</textarea></div>
-        <div class="span"><label class="hint">Locations (one per line)</label>
-          <textarea id="sLocs" rows="3">Parksville</textarea></div>
-        <div class="span row">
-          <button id="sSave" class="primary">Save settings</button>
-          <button id="sApply" class="ghost">Apply (no save)</button>
-        </div>
-      </div>
-      <div class="hint">After saving sizes, a size preset dropdown appears under the Plushie Size field.</div>
-    </section>
+    <div class="span"><label class="hint">Locations (one per line)</label>
+      <textarea id="sLocs" rows="3">Parksville</textarea></div>
+    <div class="span row">
+      <button id="sSave" class="primary">Save settings</button>
+      <button id="sApply" class="ghost">Apply (no save)</button>
+      <button id="sClose" class="ghost">Close</button>
+    </div>
+  </div>
+  <div class="hint">After saving sizes, a size preset dropdown appears under the Plushie Size field.</div>
+</dialog>
+
   </main>
 
   <!-- Instructions (auto-open) -->
