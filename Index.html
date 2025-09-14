@@ -4,9 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LydiBug Styles — Market Hub</title>
+
+  <!-- PWA / icons -->
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icons/icon-192.png">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+
+  <!-- iOS Add-to-Home support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -15,6 +22,19 @@
     <div class="titles">
       <h1>LydiBug Styles — Market Hub <span id="ver">v2.23.1</span></h1>
       <div class="tagline">Simplify your hustle</div>
+    </div>
+
+    <!-- Header menu -->
+    <div class="hdr-actions">
+      <button id="btnMenu" class="soft">⚙️ Menu</button>
+      <div id="menuDrop" class="dropdown" style="display:none">
+        <button data-act="settings">⚙️ Settings</button>
+        <button data-act="instructions">📖 Instructions</button>
+        <button data-act="whatsnew">✨ What’s New</button>
+        <hr>
+        <button data-act="export">⬇️ Export (backup)</button>
+        <button data-act="import">⬆️ Import (restore)</button>
+      </div>
     </div>
   </header>
 
@@ -174,7 +194,7 @@
     </section>
 
     <!-- Settings -->
-    <section class="card">
+    <section class="card" id="cardSettings">
       <h2>⚙️ Settings</h2>
       <div class="grid g2">
         <div><label class="hint">Currency symbol</label><input id="sCurSym" placeholder="$"></div>
@@ -216,10 +236,21 @@ Giant (21”+)</textarea></div>
     <button id="wnClose" class="primary">Got it</button>
   </dialog>
 
+  <!-- Market Workspace -->
   <dialog id="dlgMarket" class="dialog">
     <div id="dlgMarketBody"></div>
   </dialog>
 
   <script src="app.js"></script>
+
+  <!-- Service Worker registration (for installability / caching) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW registration failed:', err));
+      });
+    }
+  </script>
 </body>
 </html>
+
