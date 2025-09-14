@@ -362,4 +362,63 @@ bindOrderHandlers();
 
 /* ===== Boot ===== */
 function renderAll(){ renderMarkets(); renderPlushies(); renderWips(); renderOrders(); }
+/* === Header menu === */
+(function headerMenu(){
+  const btn = $('btnMenu');
+  const drop = $('menuDrop');
+  if(!btn || !drop) return;
+  btn.addEventListener('click', ()=>{
+    drop.style.display = (drop.style.display==='none' || !drop.style.display) ? 'block' : 'none';
+  });
+  document.addEventListener('click', (e)=>{
+    if (!drop.contains(e.target) && e.target !== btn) drop.style.display='none';
+  });
+
+  drop.addEventListener('click', (e)=>{
+    const act = e.target?.dataset?.act;
+    if(!act) return;
+    drop.style.display='none';
+
+    if (act==='settings'){
+      $('hub').style.display='block'; // ensure hub is visible
+      $('cardSettings')?.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+    if (act==='instructions'){ $('dlgInstructions')?.showModal(); }
+    if (act==='whatsnew'){ $('dlgWhatsNew')?.showModal(); }
+
+    if (act==='export'){
+      const blob = new Blob([JSON.stringify({
+        settings: SETTINGS, markets: MARKETS, plush: PLUSH, wips: WIPS, orders: ORDERS
+      }, null, 2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `LBS_MarketHub_backup_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    if (act==='import'){
+      const inp = document.createElement('input');
+      inp.type='file'; inp.accept='application/json';
+      inp.onchange = async ()=>{
+        const file = inp.files?.[0]; if(!file) return;
+        const text = await file.text();
+        try{
+          const j = JSON.parse(text);
+          if (j.settings) { SETTINGS = j.settings; localStorage.setItem(KSET, JSON.stringify(SETTINGS)); applySettingsUI(); rebuildWhereDropdown(); buildPlushSizePresetHelper(); }
+          if (j.markets)  { MARKETS  = j.markets;  localStorage.setItem(KMK,  JSON.stringify(MARKETS)); }
+          if (j.plush)    { PLUSH    = j.plush;    localStorage.setItem(KPL,  JSON.stringify(PLUSH)); }
+          if (j.wips)     { WIPS     = j.wips;     localStorage.setItem(KWP,  JSON.stringify(WIPS)); }
+          if (j.orders)   { ORDERS   = j.orders;   localStorage.setItem(KOR,  JSON.stringify(ORDERS)); }
+          renderAll();
+          alert('Import complete ✅');
+        }catch(err){
+          alert('Import failed: '+ err.message);
+        }
+      };
+      inp.click();
+    }
+  });
+})();
+
 renderAll();
