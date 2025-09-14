@@ -72,6 +72,8 @@ function readSettingsFromUI(persist){
 $('sSave').addEventListener('click', ()=>{ readSettingsFromUI(true); alert('Settings saved'); });
 $('sApply').addEventListener('click', ()=>{ readSettingsFromUI(false); alert('Settings applied (not saved)'); });
 applySettingsUI();
+$('sClose')?.addEventListener('click', ()=> $('dlgSettings')?.close());
+
 
 /* ===== Markets ===== */
 function statusBadge(m){
@@ -367,9 +369,11 @@ function renderAll(){ renderMarkets(); renderPlushies(); renderWips(); renderOrd
   const btn = $('btnMenu');
   const drop = $('menuDrop');
   if(!btn || !drop) return;
+
   btn.addEventListener('click', ()=>{
     drop.style.display = (drop.style.display==='none' || !drop.style.display) ? 'block' : 'none';
   });
+
   document.addEventListener('click', (e)=>{
     if (!drop.contains(e.target) && e.target !== btn) drop.style.display='none';
   });
@@ -379,12 +383,15 @@ function renderAll(){ renderMarkets(); renderPlushies(); renderWips(); renderOrd
     if(!act) return;
     drop.style.display='none';
 
+    // OPEN SETTINGS DIALOG (was: scroll to card)
     if (act==='settings'){
-      $('hub').style.display='block'; // ensure hub is visible
-      $('cardSettings')?.scrollIntoView({behavior:'smooth', block:'start'});
+      $('hub').style.display='block';
+      $('dlgSettings')?.showModal();
+      return;
     }
-    if (act==='instructions'){ $('dlgInstructions')?.showModal(); }
-    if (act==='whatsnew'){ $('dlgWhatsNew')?.showModal(); }
+
+    if (act==='instructions'){ $('dlgInstructions')?.showModal(); return; }
+    if (act==='whatsnew'){ $('dlgWhatsNew')?.showModal(); return; }
 
     if (act==='export'){
       const blob = new Blob([JSON.stringify({
@@ -395,6 +402,7 @@ function renderAll(){ renderMarkets(); renderPlushies(); renderWips(); renderOrd
       a.download = `LBS_MarketHub_backup_${new Date().toISOString().slice(0,10)}.json`;
       a.click();
       URL.revokeObjectURL(a.href);
+      return;
     }
 
     if (act==='import'){
@@ -417,6 +425,7 @@ function renderAll(){ renderMarkets(); renderPlushies(); renderWips(); renderOrd
         }
       };
       inp.click();
+      return;
     }
   });
 })();
