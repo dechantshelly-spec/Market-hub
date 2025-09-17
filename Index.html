@@ -1,274 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LydiBug Styles — Market Hub</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LydiBug Styles — Market Hub</title>
 
-  <!-- PWA / icons -->
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="assets/icons/icon-192.png">
-  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<!-- PWA / icons -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
 
-  <!-- iOS Add-to-Home support -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<!-- iOS Add-to-Home support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-  <link rel="stylesheet" href="styles.css">
-
-  <!-- Minimal inline layout for List of Markets + Insights cluster -->
-  <style>
-    .cluster{ display:block; gap:16px; }
-    @media (min-width: 900px){
-      .cluster{
-        display:grid;
-        grid-template-columns: 2fr 1fr; /* left wider than right */
-        align-items:start;
-        gap:16px;
-      }
-      .cluster > .card{ margin:0; }
-    }
-  </style>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="appbar">
-    <img class="brand" src="assets/icons/icon-192.png" alt="LydiBug Styles">
-    <div class="titles">
-      <h1>LydiBug Styles — Market Hub <span id="ver">v2.23.1</span></h1>
-      <div class="tagline">Simplify your hustle</div>
+<header class="appbar">
+  <img class="brand" src="assets/icons/icon-192.png" alt="LydiBug Styles">
+  <div class="titles">
+    <h1>LydiBug Styles — Market Hub <span id="ver">v2.23.1</span></h1>
+    <div class="tagline">Simplify your hustle</div>
+  </div>
+
+  <!-- Header menu -->
+  <div class="hdr-actions">
+    <button id="btnMenu" class="soft">⚙️ Menu</button>
+    <div id="menuDrop" class="dropdown" style="display:none">
+      <button data-act="settings">⚙️ Settings</button>
+      <button data-act="instructions">📖 Instructions</button>
+      <button data-act="whatsnew">✨ What’s New</button>
+      <hr>
+      <button data-act="export">⬇️ Export (backup)</button>
+      <button data-act="import">⬆️ Import (restore)</button>
     </div>
+  </div>
+</header>
 
-    <!-- Header menu -->
-    <div class="hdr-actions">
-      <button id="btnMenu" class="soft">⚙️ Menu</button>
-      <div id="menuDrop" class="dropdown" style="display:none">
-        <button data-act="settings">⚙️ Settings</button>
-        <button data-act="instructions">📖 Instructions</button>
-        <button data-act="whatsnew">✨ What’s New</button>
-        <hr>
-        <button data-act="export">⬇️ Export (backup)</button>
-        <button data-act="import">⬆️ Import (restore)</button>
+<main id="hub" style="display:none;">
+  <!-- Markets -->
+  <section class="card">
+    <h2>📅 Upcoming Markets</h2>
+    <div class="grid g4">
+      <div>
+        <label class="hint">Market name</label>
+        <input id="mName" placeholder="e.g., Ho Ho Ho Christmas Market">
+      </div>
+      <div>
+        <label class="hint">Start date</label>
+        <input id="mDate" type="date">
+      </div>
+      <div>
+        <label class="hint">End date (optional)</label>
+        <input id="mEnd" type="date">
+      </div>
+      <div>
+        <label class="hint">Location</label>
+        <select id="mWhere"></select>
+      </div>
+      <div>
+        <label class="hint">Table fee</label>
+        <input id="mFee" type="number" min="0" step="0.01" placeholder="0.00">
+      </div>
+      <div class="span">
+        <input id="mNotes" placeholder="Notes (optional)">
+      </div>
+      <div class="span row">
+        <button id="addMarket" class="primary">➕ Add Market</button>
       </div>
     </div>
-  </header>
+    <div id="marketList"></div>
+  </section>
 
-  <main id="hub" style="display:none;">
-    <!-- Markets -->
-    <section class="card">
-      <h2>📅 Upcoming Markets</h2>
-      <div class="grid g4">
-        <div>
-          <label class="hint">Market name</label>
-          <input id="mName" placeholder="e.g., Ho Ho Ho Christmas Market">
-        </div>
-        <div>
-          <label class="hint">Start date</label>
-          <input id="mDate" type="date">
-        </div>
-        <div>
-          <label class="hint">End date (optional)</label>
-          <input id="mEnd" type="date">
-        </div>
-        <div>
-          <label class="hint">Location</label>
-          <select id="mWhere"></select>
-        </div>
-        <div>
-          <label class="hint">Table fee</label>
-          <input id="mFee" type="number" min="0" step="0.01" placeholder="0.00">
-        </div>
-        <div class="span">
-          <input id="mNotes" placeholder="Notes (optional)">
-        </div>
-        <div class="span row">
-          <button id="addMarket" class="primary">➕ Add Market</button>
-        </div>
-      </div>
-      <div id="marketList"></div>
-    </section>
-
-    <!-- Market Overview cluster: List of Markets (left) + Insights (right) -->
-    <div class="cluster">
-      <!-- Market Directory (left) -->
-      <section class="card">
-        <h2>🗂️ List of Markets</h2>
-        <input id="mSearch" placeholder="Search by name, date, or location…" class="mb10">
-        <div id="mDir"></div>
-      </section>
-
-      <!-- Insights (right) -->
-      <section class="card">
-        <h2>📊 Insights</h2>
-        <ul class="facts">
-          <li>Total upcoming: <strong id="insUpcoming">0</strong></li>
-          <li>Next market: <strong id="insNext">—</strong> <span id="insNextSub" class="hint"></span></li>
-          <li>Total vendor fees: <strong id="insFees">$0.00 USD</strong></li>
-          <li>Total sales: <strong id="insSales">$0.00 USD</strong></li>
-        </ul>
-      </section>
+  <!-- Market Directory -->
+  <section class="card">
+    <h2>🗂️ List of Markets</h2>
+    <input id="mSearch" placeholder="Search by name, date, or location…" class="mb10">
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Market</th>
+            <th>Dates</th>
+            <th>Location</th>
+            <th class="right">Total Sales</th>
+          </tr>
+        </thead>
+        <tbody id="markets-table"><!-- rows rendered by app.js --></tbody>
+      </table>
     </div>
+  </section>
 
-    <!-- Plushies -->
-    <section class="card">
-      <h2>🧸 Plushie Creations</h2>
-      <div class="grid g4">
-        <div>
-          <label class="hint">Name</label>
-          <input id="pName" placeholder="e.g., Jumbo Octo">
-        </div>
-        <div>
-          <label class="hint">Size</label>
-          <input id="pSize" placeholder="e.g., Medium">
-          <!-- size preset will be injected below this input -->
-        </div>
-        <div>
-          <label class="hint">Status</label>
-          <select id="pStatus">
-            <option>Planned</option><option>In progress</option>
-            <option>Finished</option><option>Delivered</option>
-          </select>
-        </div>
-        <div>
-          <label class="hint">Price</label>
-          <input id="pPrice" type="number" min="0" step="0.01" placeholder="0.00">
-        </div>
-        <div class="span">
-          <label class="hint">Assign to markets (multi-select)</label>
-          <select id="pMarkets" multiple size="3"></select>
-        </div>
-        <div class="span row">
-          <input id="pNotes" placeholder="Notes (optional)" class="grow">
-          <button id="addPlush" class="primary">Add / Save</button>
-          <button id="cancelPlush" class="ghost">Cancel</button>
-        </div>
+  <!-- Insights -->
+  <section class="card">
+    <h2>📊 Insights</h2>
+    <ul class="facts">
+      <li>Total upcoming: <strong id="insUpcoming">0</strong></li>
+      <li>Next market: <strong id="insNext">—</strong> <span id="insNextSub" class="hint"></span></li>
+      <li>Total vendor fees: <strong id="insFees">$0.00 USD</strong></li>
+      <li>Total sales: <strong id="insSales">$0.00 USD</strong></li>
+    </ul>
+  </section>
+
+  <!-- Plushies -->
+  <section class="card">
+    <h2>🧸 Plushie Creations</h2>
+    <div class="grid g4">
+      <div>
+        <label class="hint">Name</label>
+        <input id="pName" placeholder="e.g., Jumbo Octo">
       </div>
-      <div id="plushList"></div>
-    </section>
-
-    <!-- WIPs -->
-    <section class="card">
-      <h2>🧶 W.I.P.s</h2>
-      <div class="grid g4">
-        <div><label class="hint">Yarn</label><input id="wYarn" placeholder="e.g., Bernat Blanket"></div>
-        <div><label class="hint">Hook</label><input id="wHook" placeholder="e.g., 4.5 mm"></div>
-        <div><label class="hint">Pattern link</label><input id="wLink" placeholder="https://…"></div>
-        <div><label class="hint">Time</label><input id="wTime" placeholder="hh:mm"></div>
-        <div class="span">
-          <label class="hint">Assign to markets (multi-select)</label>
-          <select id="wMarkets" multiple size="3"></select>
-        </div>
-        <div class="span row">
-          <input id="wNotes" placeholder="Notes (optional)" class="grow">
-          <button id="addWip" class="primary">Add / Save</button>
-          <button id="cancelWip" class="ghost">Cancel</button>
-        </div>
+      <div>
+        <label class="hint">Size</label>
+        <input id="pSize" placeholder="e.g., Medium">
+        <!-- size preset will be injected below this input -->
       </div>
-      <div id="wipList"></div>
-    </section>
-
-    <!-- Orders -->
-    <section class="card">
-      <h2>🧾 Customer Orders</h2>
-      <div class="grid g4">
-        <div><label class="hint">Customer</label><input id="oName"></div>
-        <div><label class="hint">Item</label><input id="oItem"></div>
-        <div><label class="hint">Qty</label><input id="oQty" type="number" min="1" step="1" value="1"></div>
-        <div><label class="hint">Due</label><input id="oDue" type="date"></div>
-        <div><label class="hint">Status</label>
-          <select id="oStatus"><option>Planned</option><option>In progress</option><option>Finished</option><option>Delivered</option></select>
-        </div>
-        <div><label class="hint">Delivery</label>
-          <select id="oDeliveryType">
-            <option value="">— choose —</option>
-            <option value="market">Market</option>
-            <option value="shipping">Shipping</option>
-            <option value="pickup">Pickup</option>
-          </select>
-        </div>
-        <div id="oDeliveryMarketWrap" style="display:none">
-          <label class="hint">Deliver at market</label>
-          <select id="oMarket"></select>
-        </div>
-        <div id="oDeliveryShipWrap" class="span grid g4" style="display:none">
-          <div><label class="hint">Ship to</label><input id="oShipTo"></div>
-          <div class="span"><label class="hint">Address</label><input id="oShipAddr"></div>
-          <div><label class="hint">Shipping cost</label><input id="oShipCost" type="number" step="0.01" min="0"></div>
-          <div><label class="hint">Tracking #</label><input id="oShipTrack"></div>
-          <div class="span"><label class="hint">Shipping notes</label><input id="oShipNotes"></div>
-        </div>
-        <div id="oDeliveryPickWrap" class="span grid g4" style="display:none">
-          <div><label class="hint">Pickup location</label><select id="oPickLoc"></select></div>
-          <div><label class="hint">Pickup time</label><input id="oPickWhen" type="datetime-local"></div>
-          <div class="span"><label class="hint">Pickup notes</label><input id="oPickNotes"></div>
-        </div>
-        <div class="span"><label class="hint">Order notes</label><input id="oNotes"></div>
-        <div class="span row">
-          <button id="addOrder" class="primary">Add / Save</button>
-          <button id="cancelOrder" class="ghost">Cancel</button>
-        </div>
+      <div>
+        <label class="hint">Status</label>
+        <select id="pStatus">
+          <option>Planned</option><option>In progress</option>
+          <option>Finished</option><option>Delivered</option>
+        </select>
       </div>
-      <div id="orderList"></div>
-    </section>
+      <div>
+        <label class="hint">Price</label>
+        <input id="pPrice" type="number" min="0" step="0.01" placeholder="0.00">
+      </div>
+      <div class="span">
+        <label class="hint">Assign to markets (multi-select)</label>
+        <select id="pMarkets" multiple size="3"></select>
+      </div>
+      <div class="span row">
+        <input id="pNotes" placeholder="Notes (optional)" class="grow">
+        <button id="addPlush" class="primary">Add / Save</button>
+        <button id="cancelPlush" class="ghost">Cancel</button>
+      </div>
+    </div>
+    <div id="plushList"></div>
+  </section>
 
-    <!-- ⚙️ Settings (dialog) -->
-    <dialog id="dlgSettings" class="dialog">
-      <h2>⚙️ Settings</h2>
-      <div class="grid g2">
-        <div><label class="hint">Currency symbol</label><input id="sCurSym" placeholder="$"></div>
-        <div><label class="hint">Currency type</label><input id="sCurType" placeholder="USD, CAD…"></div>
-        <div class="span"><label class="hint">Plushie sizes (one per line)</label>
-          <textarea id="sSizes" rows="4">Mini (3–5")
+  <!-- WIPs -->
+  <section class="card">
+    <h2>🧶 W.I.P.s</h2>
+    <div class="grid g4">
+      <div><label class="hint">Yarn</label><input id="wYarn" placeholder="e.g., Bernat Blanket"></div>
+      <div><label class="hint">Hook</label><input id="wHook" placeholder="e.g., 4.5 mm"></div>
+      <div><label class="hint">Pattern link</label><input id="wLink" placeholder="https://…"></div>
+      <div><label class="hint">Time</label><input id="wTime" placeholder="hh:mm"></div>
+      <div class="span">
+        <label class="hint">Assign to markets (multi-select)</label>
+        <select id="wMarkets" multiple size="3"></select>
+      </div>
+      <div class="span row">
+        <input id="wNotes" placeholder="Notes (optional)" class="grow">
+        <button id="addWip" class="primary">Add / Save</button>
+        <button id="cancelWip" class="ghost">Cancel</button>
+      </div>
+    </div>
+    <div id="wipList"></div>
+  </section>
+
+  <!-- Orders -->
+  <section class="card">
+    <h2>🧾 Customer Orders</h2>
+    <div class="grid g4">
+      <div><label class="hint">Customer</label><input id="oName"></div>
+      <div><label class="hint">Item</label><input id="oItem"></div>
+      <div><label class="hint">Qty</label><input id="oQty" type="number" min="1" step="1" value="1"></div>
+      <div><label class="hint">Due</label><input id="oDue" type="date"></div>
+      <div><label class="hint">Status</label>
+        <select id="oStatus"><option>Planned</option><option>In progress</option><option>Finished</option><option>Delivered</option></select>
+      </div>
+      <div><label class="hint">Delivery</label>
+        <select id="oDeliveryType">
+          <option value="">— choose —</option>
+          <option value="market">Market</option>
+          <option value="shipping">Shipping</option>
+          <option value="pickup">Pickup</option>
+        </select>
+      </div>
+      <div id="oDeliveryMarketWrap" style="display:none">
+        <label class="hint">Deliver at market</label>
+        <select id="oMarket"></select>
+      </div>
+      <div id="oDeliveryShipWrap" class="span grid g4" style="display:none">
+        <div><label class="hint">Ship to</label><input id="oShipTo"></div>
+        <div class="span"><label class="hint">Address</label><input id="oShipAddr"></div>
+        <div><label class="hint">Shipping cost</label><input id="oShipCost" type="number" step="0.01" min="0"></div>
+        <div><label class="hint">Tracking #</label><input id="oShipTrack"></div>
+        <div class="span"><label class="hint">Shipping notes</label><input id="oShipNotes"></div>
+      </div>
+      <div id="oDeliveryPickWrap" class="span grid g4" style="display:none">
+        <div><label class="hint">Pickup location</label><select id="oPickLoc"></select></div>
+        <div><label class="hint">Pickup time</label><input id="oPickWhen" type="datetime-local"></div>
+        <div class="span"><label class="hint">Pickup notes</label><input id="oPickNotes"></div>
+      </div>
+      <div class="span"><label class="hint">Order notes</label><input id="oNotes"></div>
+      <div class="span row">
+        <button id="addOrder" class="primary">Add / Save</button>
+        <button id="cancelOrder" class="ghost">Cancel</button>
+      </div>
+    </div>
+    <div id="orderList"></div>
+  </section>
+
+  <!-- ⚙️ Settings (dialog) -->
+  <dialog id="dlgSettings" class="dialog">
+    <h2>⚙️ Settings</h2>
+    <div class="grid g2">
+      <div><label class="hint">Currency symbol</label><input id="sCurSym" placeholder="$"></div>
+      <div><label class="hint">Currency type</label><input id="sCurType" placeholder="USD, CAD…"></div>
+      <div class="span"><label class="hint">Plushie sizes (one per line)</label>
+        <textarea id="sSizes" rows="4">Mini (3–5")
 Small (6–8")
 Medium (9–12")
 Large (13–16")
 XL / Jumbo (17–20")
 Giant (21”+)</textarea></div>
-        <div class="span"><label class="hint">Locations (one per line)</label>
-          <textarea id="sLocs" rows="3">Parksville</textarea></div>
-        <div class="span row">
-          <button id="sSave" class="primary">Save settings</button>
-          <button id="sApply" class="ghost">Apply (no save)</button>
-          <button id="sClose" class="ghost">Close</button>
-        </div>
+      <div class="span"><label class="hint">Locations (one per line)</label>
+        <textarea id="sLocs" rows="3">Parksville</textarea></div>
+      <div class="span row">
+        <button id="sSave" class="primary">Save settings</button>
+        <button id="sApply" class="ghost">Apply (no save)</button>
+        <button id="sClose" class="ghost">Close</button>
       </div>
-      <div class="hint">After saving sizes, a size preset dropdown appears under the Plushie Size field.</div>
-    </dialog>
-
-  </main>
-
-  <!-- Instructions (auto-open) -->
-  <dialog id="dlgInstructions" class="dialog">
-    <h2>Welcome to LydiBug Styles Market Hub</h2>
-    <p>I built this for my crochet business and thought other makers might find it helpful. Here’s to the hustle! 💪</p>
-    <button id="btnCloseInstructions" class="primary">Close</button>
+    </div>
+    <div class="hint">After saving sizes, a size preset dropdown appears under the Plushie Size field.</div>
   </dialog>
+</main>
 
-  <!-- What’s New -->
-  <dialog id="dlgWhatsNew" class="dialog">
-    <h2>✨ What’s New</h2>
-    <ul>
-      <li>Plushies & W.I.P.s linked into Market Workspace</li>
-      <li>Customer Orders with Market / Shipping / Pickup delivery</li>
-      <li>Settings: currency, sizes (+preset), locations (+dropdown)</li>
-      <li>Workspace checklist add/edit/reset</li>
-    </ul>
-    <button id="wnClose" class="primary">Got it</button>
-  </dialog>
+<!-- Instructions (auto-open) -->
+<dialog id="dlgInstructions" class="dialog">
+  <h2>Welcome to LydiBug Styles Market Hub</h2>
+  <p>I built this for my crochet business and thought other makers might find it helpful. Here’s to the hustle! 💪</p>
+  <button id="btnCloseInstructions" class="primary">Close</button>
+</dialog>
 
-  <!-- Market Workspace -->
-  <dialog id="dlgMarket" class="dialog">
-    <div id="dlgMarketBody"></div>
-  </dialog>
+<!-- What’s New -->
+<dialog id="dlgWhatsNew" class="dialog">
+  <h2>✨ What’s New</h2>
+  <ul>
+    <li>Plushies & W.I.P.s linked into Market Workspace</li>
+    <li>Customer Orders with Market / Shipping / Pickup delivery</li>
+    <li>Settings: currency, sizes (+preset), locations (+dropdown)</li>
+    <li>Workspace checklist add/edit/reset</li>
+  </ul>
+  <button id="wnClose" class="primary">Got it</button>
+</dialog>
 
-  <script src="app.js"></script>
+<!-- Market Workspace -->
+<dialog id="dlgMarket" class="dialog">
+  <div id="dlgMarketBody"></div>
+</dialog>
 
-  <!-- Service Worker registration (for installability / caching) -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW registration failed:', err));
-      });
-    }
-  </script>
+<script src="app.js"></script>
+
+<!-- Service Worker registration (for installability / caching) -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW registration failed:', err));
+  });
+}
+</script>
 </body>
 </html>
