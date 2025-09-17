@@ -63,6 +63,9 @@ function readSettingsFromUI(persist){
   const lines = t => (t||'').split(/\n+/).map(x=>x.trim()).filter(Boolean);
   SETTINGS.currency = ($('sCurSym').value||'$').trim()||'$';
   SETTINGS.currencyType = ($('sCurType').value||'USD').trim()||'USD';
+  const curSym  = ()=> SETTINGS.currency || '$';
+const curType = ()=> SETTINGS.currencyType || 'USD';
+
   SETTINGS.sizes = lines($('sSizes').value);
   SETTINGS.locations = lines($('sLocs').value);
   if(persist) saveSettings();
