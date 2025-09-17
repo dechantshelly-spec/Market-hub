@@ -15,6 +15,20 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Minimal inline layout for List of Markets + Insights cluster -->
+  <style>
+    .cluster{ display:block; gap:16px; }
+    @media (min-width: 900px){
+      .cluster{
+        display:grid;
+        grid-template-columns: 2fr 1fr; /* left wider than right */
+        align-items:start;
+        gap:16px;
+      }
+      .cluster > .card{ margin:0; }
+    }
+  </style>
 </head>
 <body>
   <header class="appbar">
@@ -73,23 +87,26 @@
       <div id="marketList"></div>
     </section>
 
-    <!-- Market Directory -->
-    <section class="card">
-      <h2>🗂️ List of Markets</h2>
-      <input id="mSearch" placeholder="Search by name, date, or location…" class="mb10">
-      <div id="mDir"></div>
-    </section>
+    <!-- Market Overview cluster: List of Markets (left) + Insights (right) -->
+    <div class="cluster">
+      <!-- Market Directory (left) -->
+      <section class="card">
+        <h2>🗂️ List of Markets</h2>
+        <input id="mSearch" placeholder="Search by name, date, or location…" class="mb10">
+        <div id="mDir"></div>
+      </section>
 
-    <!-- Insights -->
-    <section class="card">
-      <h2>📊 Insights</h2>
-      <ul class="facts">
-        <li>Total upcoming: <strong id="insUpcoming">0</strong></li>
-        <li>Next market: <strong id="insNext">—</strong> <span id="insNextSub" class="hint"></span></li>
-        <li>Total vendor fees: <strong id="insFees">$0.00 USD</strong></li>
-        <li>Total sales: <strong id="insSales">$0.00 USD</strong></li>
-      </ul>
-    </section>
+      <!-- Insights (right) -->
+      <section class="card">
+        <h2>📊 Insights</h2>
+        <ul class="facts">
+          <li>Total upcoming: <strong id="insUpcoming">0</strong></li>
+          <li>Next market: <strong id="insNext">—</strong> <span id="insNextSub" class="hint"></span></li>
+          <li>Total vendor fees: <strong id="insFees">$0.00 USD</strong></li>
+          <li>Total sales: <strong id="insSales">$0.00 USD</strong></li>
+        </ul>
+      </section>
+    </div>
 
     <!-- Plushies -->
     <section class="card">
@@ -193,30 +210,29 @@
       <div id="orderList"></div>
     </section>
 
-    <!-- Settings -->
     <!-- ⚙️ Settings (dialog) -->
-<dialog id="dlgSettings" class="dialog">
-  <h2>⚙️ Settings</h2>
-  <div class="grid g2">
-    <div><label class="hint">Currency symbol</label><input id="sCurSym" placeholder="$"></div>
-    <div><label class="hint">Currency type</label><input id="sCurType" placeholder="USD, CAD…"></div>
-    <div class="span"><label class="hint">Plushie sizes (one per line)</label>
-      <textarea id="sSizes" rows="4">Mini (3–5")
+    <dialog id="dlgSettings" class="dialog">
+      <h2>⚙️ Settings</h2>
+      <div class="grid g2">
+        <div><label class="hint">Currency symbol</label><input id="sCurSym" placeholder="$"></div>
+        <div><label class="hint">Currency type</label><input id="sCurType" placeholder="USD, CAD…"></div>
+        <div class="span"><label class="hint">Plushie sizes (one per line)</label>
+          <textarea id="sSizes" rows="4">Mini (3–5")
 Small (6–8")
 Medium (9–12")
 Large (13–16")
 XL / Jumbo (17–20")
 Giant (21”+)</textarea></div>
-    <div class="span"><label class="hint">Locations (one per line)</label>
-      <textarea id="sLocs" rows="3">Parksville</textarea></div>
-    <div class="span row">
-      <button id="sSave" class="primary">Save settings</button>
-      <button id="sApply" class="ghost">Apply (no save)</button>
-      <button id="sClose" class="ghost">Close</button>
-    </div>
-  </div>
-  <div class="hint">After saving sizes, a size preset dropdown appears under the Plushie Size field.</div>
-</dialog>
+        <div class="span"><label class="hint">Locations (one per line)</label>
+          <textarea id="sLocs" rows="3">Parksville</textarea></div>
+        <div class="span row">
+          <button id="sSave" class="primary">Save settings</button>
+          <button id="sApply" class="ghost">Apply (no save)</button>
+          <button id="sClose" class="ghost">Close</button>
+        </div>
+      </div>
+      <div class="hint">After saving sizes, a size preset dropdown appears under the Plushie Size field.</div>
+    </dialog>
 
   </main>
 
@@ -256,4 +272,3 @@ Giant (21”+)</textarea></div>
   </script>
 </body>
 </html>
-
